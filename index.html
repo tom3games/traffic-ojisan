@@ -1,0 +1,3335 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<script id="ghMove">if(location.hostname==='tom3games.github.io'){location.replace('https://tom3games.com/play/traffic-ojisan/'+location.search+location.hash)}</script>
+<link rel="canonical" href="https://tom3games.com/play/traffic-ojisan/">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>トラフィックおじさん</title>
+<meta name="description" content="ベテラン交通整備員になって 上から流れてくる車を レーン別にドラッグで誘導しよう。ドット絵カジュアルゲーム。">
+<!-- OGP / SNS シェア -->
+<meta property="og:type" content="website">
+<meta property="og:title" content="トラフィックおじさん">
+<meta property="og:description" content="ベテラン整備員になって 上から流れてくる車を レーン別にドラッグで誘導しよう。ドット絵カジュアルゲーム。">
+<meta property="og:url" content="https://tom3games.com/play/traffic-ojisan/">
+<meta property="og:image" content="https://tom3games.com/play/traffic-ojisan/og.png?v=1">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:site_name" content="トラフィックおじさん">
+<meta property="og:locale" content="ja_JP">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="トラフィックおじさん">
+<meta name="twitter:description" content="ベテラン整備員になって 上から流れてくる車を レーン別にドラッグで誘導！">
+<meta name="twitter:image" content="https://tom3games.com/play/traffic-ojisan/og.png?v=1">
+<meta name="theme-color" content="#ffd24a">
+<link rel="icon" href="favicon.ico?v=4" sizes="any">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png?v=4">
+<link rel="apple-touch-icon" sizes="192x192" href="icon-192.png?v=4">
+<!-- ピクセルフォント（アプリ同梱・オフライン対応） -->
+<link rel="preload" href="DotGothic16.ttf" as="font" type="font/ttf" crossorigin>
+<style>
+  @font-face{
+    font-family:'DotGothic16';
+    src:url('DotGothic16.ttf') format('truetype');
+    font-weight:400;
+    font-style:normal;
+    font-display:swap;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none;}
+  html,body{margin:0;padding:0;height:100%;background:#222;overflow:hidden;font-family:'DotGothic16','Press Start 2P',"Hiragino Kaku Gothic ProN",monospace;color:#fff;letter-spacing:0.02em;}
+  #stage{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;}
+  canvas{background:#000;touch-action:none;display:block;box-shadow:0 0 24px rgba(0,0,0,.6);}
+  .hidden{display:none !important;}
+  .small{font-size:14px;opacity:.7;}
+  .ic{display:inline-block;width:1.05em;height:1.05em;vertical-align:-0.18em;}
+  .ic-lg{width:1.7em;height:1.7em;vertical-align:-0.35em;}
+  .ic-xl{width:2.4em;height:2.4em;vertical-align:-0.45em;}
+  /* ホーム画面 */
+  #home{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;
+        background:
+          linear-gradient(180deg,rgba(20,20,38,.45) 0%,rgba(20,20,38,.10) 30%,rgba(20,20,38,.70) 100%),
+          url('bg-home.webp') center bottom / cover no-repeat,
+          #1a1a26;
+        z-index:10;padding:18px 16px;overflow-y:auto;}
+  /* ハンバーガーメニュー */
+  #menuBtn{position:absolute;top:8px;right:8px;width:42px;height:42px;border:none;
+           border-radius:0;background:rgba(40,40,55,.92);color:#ffd24a;font-size:22px;
+           font-weight:bold;cursor:pointer;z-index:21;line-height:1;
+           border:2px solid #ffd24a;}
+  #menuBtn:active{transform:translateY(1px);}
+  #menuPop{position:absolute;top:54px;right:8px;background:rgba(20,20,28,.97);
+           border:2px solid #ffd24a;border-radius:0;padding:6px;z-index:21;
+           display:flex;flex-direction:column;gap:2px;min-width:160px;
+           box-shadow:4px 4px 0 rgba(0,0,0,.5);}
+  #menuPop .mItem{background:transparent;color:#fff;border:none;padding:12px 14px;
+                  text-align:left;cursor:pointer;font-size:16px;border-radius:0;
+                  display:flex;justify-content:space-between;align-items:center;gap:10px;}
+  #menuPop .mItem:active{background:rgba(255,210,74,.18);}
+  #menuPop .mItem .toggleVal{font-weight:bold;font-size:14px;letter-spacing:.1em;}
+  #menuPop .mItem .toggleVal.on{color:#88dd88;}
+  #menuPop .mItem .toggleVal.off{color:#888;}
+  /* あそびかた・クレジット モーダル */
+  #howto, #credit{position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:30;
+         display:flex;align-items:center;justify-content:center;padding:18px;}
+  #howto .card, #credit .card{background:#222230;border:3px solid #ffd24a;border-radius:0;
+               padding:18px 20px;max-width:340px;width:100%;max-height:84vh;
+               overflow-y:auto;color:#fff;box-shadow:6px 6px 0 rgba(0,0,0,.5);}
+  #howto h2, #credit h2{margin:0 0 12px;color:#ffd24a;text-align:center;font-size:20px;}
+  #howto h3, #credit h3{margin:14px 0 6px;color:#ffd24a;font-size:16px;border-bottom:1px solid rgba(255,210,74,.3);padding-bottom:4px;}
+  #howto p, #credit p{font-size:15px;line-height:1.7;margin:4px 0;}
+  #howto .row{display:flex;align-items:center;gap:10px;margin:6px 0;font-size:15px;}
+  #howto .marker{flex-shrink:0;width:26px;height:26px;border-radius:50%;
+                 display:flex;align-items:center;justify-content:center;font-weight:bold;font-size:16px;}
+  #howto .m-red{background:#d24a64;}
+  #howto .m-blk{background:#3a5db8;border:1px solid #88aaff;}
+  #howto .m-brn{background:#7a5230;}
+  #howto .m-yel{background:#caa84a;color:#000;}
+  #howto .m-pur{background:#7a3acc;}
+  #howto .m-gld{background:#e0a818;color:#000;}
+  #howto .closeBtn, #credit .closeBtn{margin-top:14px;width:100%;padding:11px;border:3px solid #a06c10;border-radius:0;
+                   background:#ffcc33;color:#222;font-weight:bold;cursor:pointer;font-size:17px;
+                   box-shadow:0 4px 0 #a06c10;}
+  #howto .closeBtn:active, #credit .closeBtn:active{transform:translateY(2px);box-shadow:0 2px 0 #a06c10;}
+  #home h1{font-size:26px;margin:6px 0 10px;letter-spacing:.05em;color:#ffd24a;text-shadow:0 2px 0 #000;}
+  #home .stats{display:flex;gap:14px;margin:6px 0 10px;font-size:16px;}
+  #home .stats .pill{background:rgba(0,0,0,.45);border:2px solid rgba(255,210,74,.5);
+                     border-radius:0;padding:6px 12px;}
+  /* タブナビ */
+  #home .tabs{display:flex;gap:0;width:100%;max-width:320px;margin:6px 0 12px;}
+  #home .tabs .tab{flex:1;padding:10px;border:3px solid #ffd24a;border-radius:0;
+                    background:rgba(0,0,0,.45);color:#aaa;font-weight:bold;font-size:16px;
+                    cursor:pointer;font-family:inherit;letter-spacing:0.05em;}
+  #home .tabs .tab.active{background:#ffd24a;color:#222;border-bottom-color:transparent;
+                           box-shadow:inset 0 -3px 0 #ffd24a;}
+  #home .tabs .tab:not(:first-child){border-left:none;}
+  #home .tabContent{width:100%;display:flex;flex-direction:column;align-items:center;}
+  #home .tabContent.hidden{display:none;}
+  #home .stats b{color:#ffcc33;margin-left:4px;}
+  #home .shop{width:100%;max-width:320px;margin:8px 0;}
+  #home .shop h3{margin:8px 0;font-size:16px;text-align:center;opacity:.7;letter-spacing:.2em;}
+  #home .shopItem{background:rgba(255,255,255,.06);border:2px solid rgba(255,210,74,.4);
+                  border-radius:0;padding:10px 12px;margin-bottom:8px;}
+  #home .shopItem .row{display:flex;align-items:center;gap:10px;}
+  #home .shopItem .icon{width:42px;height:42px;border-radius:0;background:#3a3a48;
+                        border:2px solid #555;
+                        display:flex;align-items:center;justify-content:center;font-size:22px;}
+  #home .shopItem .info{flex:1;min-width:0;}
+  #home .shopItem .name{font-weight:bold;font-size:16px;}
+  #home .shopItem .desc{font-size:14px;opacity:.7;}
+  #home .shopItem .own{font-size:14px;color:#ffd24a;}
+  #home .shopItem button{margin-top:8px;width:100%;padding:8px;border:3px solid #a06c10;border-radius:0;
+                         background:#ffcc33;color:#222;font-weight:bold;cursor:pointer;font-size:15px;
+                         box-shadow:0 3px 0 #a06c10;}
+  #home .shopItem button:active{transform:translateY(1px);box-shadow:0 2px 0 #a06c10;}
+  #home .shopItem button:disabled{background:#444;color:#888;cursor:not-allowed;border-color:#222;box-shadow:none;}
+  #home .shopItem.locked{opacity:.82;border-color:rgba(120,120,140,.6);}
+  #home .shopItem.locked .icon{filter:grayscale(1) brightness(.6);}
+  #home .shopItem .lockNote{font-size:14px;color:#ff8888;margin-top:2px;}
+  #home #startBtn{margin-top:12px;padding:14px 36px;font-size:20px;border:4px solid #993322;border-radius:0;
+                  background:#ff6644;color:#fff;font-weight:bold;cursor:pointer;
+                  box-shadow:0 6px 0 #993322;letter-spacing:0.1em;}
+  #home #startBtn:active{transform:translateY(4px);box-shadow:0 2px 0 #993322;}
+  #home .useTicket{width:100%;max-width:320px;margin:8px 0;background:rgba(255,102,204,.12);
+                    border:2px solid rgba(255,102,204,.7);border-radius:0;padding:8px 12px;
+                    font-size:15px;}
+  #home .useTicket label{display:flex;align-items:center;gap:6px;cursor:pointer;}
+  #home .useTicket input{transform:scale(1.2);}
+  #home .carryBox{width:100%;max-width:320px;margin:8px 0;background:rgba(136,221,255,.10);
+                  border:2px solid rgba(136,221,255,.6);border-radius:0;padding:8px 12px;font-size:15px;}
+  #home .carryBox .carryTitle{font-size:14px;opacity:.8;letter-spacing:.15em;color:#88ddff;margin-bottom:6px;}
+  #home .carryBox .carryOpt{display:flex;align-items:center;gap:8px;cursor:pointer;padding:4px 2px;}
+  #home .carryBox .carryOpt input{transform:scale(1.2);}
+  #home .carryBox .carryOpt .ic{width:16px;height:16px;}
+  #home .missions{width:100%;max-width:320px;margin-top:14px;}
+  #home .missions h3{margin:6px 0;font-size:15px;text-align:center;opacity:.8;letter-spacing:.2em;color:#88ddff;}
+  #home .missions ul{list-style:none;padding:0;margin:0;}
+  #home .missions li{background:rgba(136,221,255,.08);border:2px solid rgba(136,221,255,.4);
+                     border-radius:0;padding:8px 10px;margin-bottom:6px;font-size:14px;}
+  #home .missions li.done{background:rgba(136,221,136,.15);border-color:rgba(136,221,136,.5);opacity:.85;}
+  #home .missions .mLine1{display:flex;align-items:center;gap:6px;font-weight:bold;}
+  #home .missions .mLine1 .name{flex:1;}
+  #home .missions .mLine1 .reward{color:#ffd24a;font-size:14px;}
+  #home .missions .mBar{height:5px;background:rgba(0,0,0,.3);border-radius:3px;margin-top:4px;overflow:hidden;}
+  #home .missions .mBar .mFill{height:100%;background:#88ddff;}
+  #home .missions li.done .mBar .mFill{background:#88dd88;}
+  #home .missions .mProgress{font-size:13px;opacity:.7;margin-top:2px;text-align:right;}
+  #home .history{width:100%;max-width:320px;margin-top:12px;font-size:14px;}
+  #home .history h3{margin:6px 0;opacity:.7;letter-spacing:.2em;text-align:center;}
+  #home .history ol{list-style:none;padding:0;margin:0;background:rgba(0,0,0,.25);
+                    border:2px solid rgba(255,255,255,.15);border-radius:0;padding:8px 12px;}
+  #home .history li{padding:3px 0;display:flex;justify-content:space-between;}
+  #home .history li.empty{justify-content:center;opacity:.4;}
+  /* おじさん タブ */
+  #home .uncleList{width:100%;max-width:320px;display:flex;flex-direction:column;gap:8px;margin:8px 0;}
+  #home .uncleCard{background:rgba(255,255,255,.06);border:2px solid rgba(255,210,74,.4);
+                   border-radius:0;padding:10px 12px;display:flex;gap:12px;align-items:flex-start;}
+  #home .uncleCard.active{border-color:#ffd24a;background:rgba(255,210,74,.16);
+                          box-shadow:4px 4px 0 rgba(0,0,0,.5);}
+  #home .uncleCard .badge{flex-shrink:0;width:64px;height:64px;border-radius:0;
+                          border:3px solid #1a1a26;
+                          display:flex;align-items:center;justify-content:center;
+                          font-size:26px;font-weight:bold;color:#fff;
+                          font-family:inherit;letter-spacing:0;
+                          overflow:hidden;}
+  #home .uncleCard .badge img{width:100%;height:100%;object-fit:cover;display:block;
+                              image-rendering:pixelated;}
+  /* メインタブの「いまのおじさん」表示 */
+  #home .currentUncle{width:100%;max-width:320px;display:flex;align-items:center;gap:10px;
+                       background:rgba(255,210,74,.12);border:2px solid rgba(255,210,74,.55);
+                       padding:8px 10px;margin:6px 0 4px;}
+  #home .currentUncle .portrait{flex-shrink:0;width:56px;height:56px;
+                                 border:3px solid #1a1a26;overflow:hidden;}
+  #home .currentUncle .portrait img{width:100%;height:100%;object-fit:cover;
+                                     image-rendering:pixelated;}
+  #home .currentUncle .info{flex:1;min-width:0;}
+  #home .currentUncle .label{font-size:13px;opacity:.82;letter-spacing:.2em;}
+  #home .currentUncle .name{font-weight:bold;font-size:16px;color:#ffd24a;}
+  #home .currentUncle .flavor{font-size:14px;opacity:.85;margin-top:2px;}
+  #home .uncleCard .info{flex:1;min-width:0;}
+  #home .uncleCard .name{font-weight:bold;font-size:16px;color:#fff;}
+  #home .uncleCard .flavor{font-size:14px;opacity:.8;margin-top:2px;line-height:1.5;}
+  #home .uncleCard .perk{font-size:14px;color:#ffd24a;margin-top:3px;}
+  #home .uncleCard button.useBtn{margin-top:8px;padding:6px 14px;border:2px solid #a06c10;
+                                  background:#ffcc33;color:#222;font-weight:bold;cursor:pointer;font-size:14px;
+                                  box-shadow:0 3px 0 #a06c10;}
+  #home .uncleCard button.useBtn:active{transform:translateY(1px);box-shadow:0 1px 0 #a06c10;}
+  #home .uncleCard .activeLabel{font-size:14px;color:#ffd24a;font-weight:bold;
+                                 letter-spacing:.1em;margin-top:8px;}
+  /* デイリーログイン */
+  #daily{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;
+         background:rgba(0,0,0,.78);z-index:20;}
+  #daily .box{background:#2a2a36;border:3px solid #ffcc33;border-radius:0;padding:24px 30px;
+              text-align:center;max-width:280px;box-shadow:6px 6px 0 rgba(0,0,0,.5);}
+  #daily h2{margin:0 0 10px;color:#ffd24a;}
+  #daily .day{font-size:15px;opacity:.7;margin:4px 0;}
+  #daily .streakDots{display:flex;justify-content:center;gap:5px;margin:8px 0;}
+  #daily .streakDots .dot{width:18px;height:18px;border-radius:50%;background:#3a3a48;
+                          display:flex;align-items:center;justify-content:center;
+                          font-size:13px;font-weight:bold;color:#666;}
+  #daily .streakDots .dot.done{background:#ffd24a;color:#222;}
+  #daily .streakDots .dot.today{background:#ff6644;color:#fff;
+                                box-shadow:0 0 0 2px #ffd24a;animation:pulse .8s ease-in-out infinite alternate;}
+  #daily .streakDots .dot.gift{background:#ff66aa;color:#fff;}
+  @keyframes pulse{from{transform:scale(1);}to{transform:scale(1.15);}}
+  #daily .amt{font-size:32px;font-weight:bold;color:#ffd24a;margin:8px 0;}
+  #daily .extra{color:#ffaa66;font-size:15px;margin-bottom:6px;}
+  #daily button{margin-top:14px;padding:10px 28px;border:3px solid #a06c10;border-radius:0;
+                background:#ffcc33;color:#222;font-weight:bold;cursor:pointer;font-size:17px;
+                box-shadow:0 4px 0 #a06c10;}
+  #daily button:active{transform:translateY(2px);box-shadow:0 2px 0 #a06c10;}
+  /* ゲームオーバー画面 */
+  #gameover{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;
+            flex-direction:column;background:rgba(0,0,0,.78);z-index:10;text-align:center;padding:24px;}
+  #gameover h1{font-size:32px;margin:0 0 10px;color:#ff6644;text-shadow:0 2px 0 #000;}
+  #gameover .big{font-size:40px;font-weight:bold;color:#ffd24a;margin:6px 0;}
+  #gameover .gain{font-size:16px;margin:4px 0;color:#ffaa66;}
+  #gameover button{margin-top:18px;padding:12px 28px;font-size:16px;border:3px solid #a06c10;border-radius:0;
+                   background:#ffcc33;color:#222;font-weight:bold;cursor:pointer;
+                   box-shadow:0 4px 0 #a06c10;}
+  #gameover button:active{transform:translateY(2px);box-shadow:0 2px 0 #a06c10;}
+  #gameover .actions{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;}
+  #gameover .actions button{margin-top:18px;}
+  #gameover .shareBtn{background:#2a7ed8;color:#fff;border-color:#1a4a7a !important;box-shadow:0 4px 0 #1a4a7a !important;}
+  #gameover .shareBtn:active{box-shadow:0 2px 0 #1a4a7a !important;}
+  #gameover .shareCard{margin-top:14px;max-width:280px;width:80%;border:3px solid #ffd24a;border-radius:0;
+                       box-shadow:6px 6px 0 rgba(0,0,0,.5);display:none;}
+</style>
+<script>
+(function(){
+  var opt={passive:false};
+  ['gesturestart','gesturechange','gestureend'].forEach(function(n){document.addEventListener(n,function(e){e.preventDefault()},opt)});
+  document.addEventListener('touchmove',function(e){if(e.touches&&e.touches.length>1)e.preventDefault()},opt);
+  var last=0;document.addEventListener('touchend',function(e){var n=Date.now();if(n-last<300&&!(e.target.closest&&e.target.closest('button,a,input,select,label,[onclick],.skinchip')))e.preventDefault();last=n},opt);
+  document.addEventListener('dblclick',function(e){e.preventDefault()},opt);
+  window.addEventListener('wheel',function(e){if(e.ctrlKey)e.preventDefault()},opt);
+  window.addEventListener('keydown',function(e){if((e.ctrlKey||e.metaKey)&&['+','-','=','0',';'].indexOf(e.key)>=0)e.preventDefault()});
+})();
+(function(){
+  var errs=[];
+  window.addEventListener('error',function(e){errs.push((e.message||'error')+' @'+(e.filename||'')+':'+(e.lineno||''))});
+  window.addEventListener('unhandledrejection',function(e){errs.push('reject: '+(e.reason&&e.reason.message||e.reason))});
+  setTimeout(function(){
+    if(window.__jsUp) return;
+    var d=document.createElement('div');d.style.cssText='position:fixed;inset:auto 8px 8px 8px;z-index:199;background:#fff;color:#b00;font:12px/1.4 monospace;white-space:pre-wrap;padding:10px';
+    d.textContent='起動できませんでした / failed to start\n'+(errs.join('\n')||'(no error captured)')+'\n'+navigator.userAgent;
+    document.body.appendChild(d);
+  },15000);
+})();
+</script>
+</head>
+<body>
+<!-- SVG アイコン スプライト -->
+<svg style="position:absolute;width:0;height:0;overflow:hidden" aria-hidden="true">
+  <defs>
+    <symbol id="ic-trophy" viewBox="0 0 24 24">
+      <path d="M5 3h14v3.5c0 3.2-2.1 5.5-4.5 5.5h-5c-2.4 0-4.5-2.3-4.5-5.5z" fill="#ffd24a" stroke="#a06c10" stroke-width="1"/>
+      <path d="M2 5h3v3.2c0 1.6 1.1 2.6 2.4 2.9" fill="none" stroke="#ffd24a" stroke-width="2" stroke-linecap="round"/>
+      <path d="M22 5h-3v3.2c0 1.6-1.1 2.6-2.4 2.9" fill="none" stroke="#ffd24a" stroke-width="2" stroke-linecap="round"/>
+      <rect x="9.5" y="11.5" width="5" height="4.5" fill="#e5b830"/>
+      <rect x="7" y="16" width="10" height="3" rx="0.6" fill="#c8951a"/>
+      <rect x="5" y="19" width="14" height="3" rx="0.6" fill="#8a6510"/>
+    </symbol>
+    <symbol id="ic-coin" viewBox="0 0 16 16" shape-rendering="crispEdges">
+      <!-- 外枠（暗黄） -->
+      <rect x="5" y="2" width="6" height="1" fill="#a06c10"/>
+      <rect x="3" y="3" width="2" height="1" fill="#a06c10"/>
+      <rect x="11" y="3" width="2" height="1" fill="#a06c10"/>
+      <rect x="2" y="4" width="1" height="2" fill="#a06c10"/>
+      <rect x="13" y="4" width="1" height="2" fill="#a06c10"/>
+      <rect x="1" y="5" width="1" height="6" fill="#a06c10"/>
+      <rect x="14" y="5" width="1" height="6" fill="#a06c10"/>
+      <rect x="2" y="11" width="1" height="2" fill="#a06c10"/>
+      <rect x="13" y="11" width="1" height="2" fill="#a06c10"/>
+      <rect x="3" y="13" width="2" height="1" fill="#a06c10"/>
+      <rect x="11" y="13" width="2" height="1" fill="#a06c10"/>
+      <rect x="5" y="14" width="6" height="1" fill="#a06c10"/>
+      <!-- 金色 -->
+      <rect x="5" y="3" width="6" height="1" fill="#ffd24a"/>
+      <rect x="3" y="4" width="10" height="1" fill="#ffd24a"/>
+      <rect x="2" y="5" width="12" height="6" fill="#ffd24a"/>
+      <rect x="3" y="11" width="10" height="1" fill="#ffd24a"/>
+      <rect x="5" y="13" width="6" height="1" fill="#ffd24a"/>
+      <!-- ¥マーク -->
+      <rect x="5" y="6" width="6" height="1" fill="#a06c10"/>
+      <rect x="5" y="9" width="6" height="1" fill="#a06c10"/>
+      <rect x="6" y="6" width="1" height="6" fill="#a06c10"/>
+      <rect x="9" y="6" width="1" height="6" fill="#a06c10"/>
+    </symbol>
+    <symbol id="ic-burst" viewBox="0 0 16 16" shape-rendering="crispEdges">
+      <!-- ホーン（クラクション）本体 -->
+      <rect x="2" y="5" width="8" height="6" fill="#ffcc33"/>
+      <rect x="10" y="4" width="2" height="8" fill="#ffcc33"/>
+      <rect x="12" y="3" width="1" height="10" fill="#ffcc33"/>
+      <!-- 影 -->
+      <rect x="2" y="10" width="8" height="1" fill="#a06c10"/>
+      <rect x="10" y="11" width="2" height="1" fill="#a06c10"/>
+      <rect x="12" y="12" width="1" height="1" fill="#a06c10"/>
+      <!-- 取っ手 -->
+      <rect x="0" y="7" width="2" height="2" fill="#cc8a10"/>
+      <!-- 音波 -->
+      <rect x="14" y="5" width="1" height="2" fill="#ff5577"/>
+      <rect x="14" y="9" width="1" height="2" fill="#ff5577"/>
+      <rect x="15" y="7" width="1" height="2" fill="#ff5577"/>
+    </symbol>
+    <symbol id="ic-gift" viewBox="0 0 24 24">
+      <rect x="3" y="11" width="18" height="11" rx="1.5" fill="#e63946" stroke="#7a1e25" stroke-width="0.8"/>
+      <rect x="11" y="11" width="2" height="11" fill="#ffd24a"/>
+      <rect x="2" y="7.5" width="20" height="4" rx="0.8" fill="#ff6678" stroke="#7a1e25" stroke-width="0.8"/>
+      <rect x="11" y="7.5" width="2" height="4" fill="#ffd24a"/>
+      <path d="M8 7.5c-2.5-3 0-4.5 4-1.5 4-3 6.5-1.5 4 1.5z" fill="#ffd24a" stroke="#a06c10" stroke-width="0.6" stroke-linejoin="round"/>
+    </symbol>
+    <symbol id="ic-x2" viewBox="0 0 16 16" shape-rendering="crispEdges">
+      <!-- 紫の円外枠（角削り正方形） -->
+      <rect x="5" y="2" width="6" height="1" fill="#a060ff"/>
+      <rect x="3" y="3" width="2" height="1" fill="#a060ff"/>
+      <rect x="11" y="3" width="2" height="1" fill="#a060ff"/>
+      <rect x="2" y="4" width="1" height="2" fill="#a060ff"/>
+      <rect x="13" y="4" width="1" height="2" fill="#a060ff"/>
+      <rect x="1" y="5" width="1" height="6" fill="#a060ff"/>
+      <rect x="14" y="5" width="1" height="6" fill="#a060ff"/>
+      <rect x="2" y="11" width="1" height="2" fill="#a060ff"/>
+      <rect x="13" y="11" width="1" height="2" fill="#a060ff"/>
+      <rect x="3" y="13" width="2" height="1" fill="#a060ff"/>
+      <rect x="11" y="13" width="2" height="1" fill="#a060ff"/>
+      <rect x="5" y="14" width="6" height="1" fill="#a060ff"/>
+      <!-- 文字盤（白） -->
+      <rect x="5" y="3" width="6" height="1" fill="#fff"/>
+      <rect x="3" y="4" width="10" height="1" fill="#fff"/>
+      <rect x="2" y="5" width="12" height="6" fill="#fff"/>
+      <rect x="3" y="11" width="10" height="1" fill="#fff"/>
+      <rect x="5" y="13" width="6" height="1" fill="#fff"/>
+      <!-- 針（時針=上、分針=右） -->
+      <rect x="7" y="5" width="2" height="3" fill="#5a1a9a"/>
+      <rect x="8" y="7" width="3" height="1" fill="#5a1a9a"/>
+      <!-- 中心 -->
+      <rect x="7" y="7" width="2" height="2" fill="#5a1a9a"/>
+    </symbol>
+    <symbol id="ic-shield" viewBox="0 0 16 16" shape-rendering="crispEdges">
+      <!-- 紋章型シールド：黄色枠＋青地＋白十字 -->
+      <rect x="3" y="2" width="10" height="1" fill="#ffd24a"/>
+      <rect x="2" y="3" width="12" height="1" fill="#ffd24a"/>
+      <rect x="2" y="4" width="1" height="6" fill="#ffd24a"/>
+      <rect x="13" y="4" width="1" height="6" fill="#ffd24a"/>
+      <rect x="3" y="10" width="1" height="2" fill="#ffd24a"/>
+      <rect x="12" y="10" width="1" height="2" fill="#ffd24a"/>
+      <rect x="4" y="12" width="1" height="1" fill="#ffd24a"/>
+      <rect x="11" y="12" width="1" height="1" fill="#ffd24a"/>
+      <rect x="5" y="13" width="2" height="1" fill="#ffd24a"/>
+      <rect x="9" y="13" width="2" height="1" fill="#ffd24a"/>
+      <rect x="7" y="14" width="2" height="1" fill="#ffd24a"/>
+      <!-- 内側ブルー -->
+      <rect x="3" y="3" width="10" height="1" fill="#3a5db8"/>
+      <rect x="3" y="4" width="10" height="6" fill="#3a5db8"/>
+      <rect x="4" y="10" width="8" height="2" fill="#3a5db8"/>
+      <rect x="5" y="12" width="6" height="1" fill="#3a5db8"/>
+      <rect x="7" y="13" width="2" height="1" fill="#3a5db8"/>
+      <!-- 白十字 -->
+      <rect x="7" y="4" width="2" height="6" fill="#fff"/>
+      <rect x="5" y="6" width="6" height="2" fill="#fff"/>
+    </symbol>
+    <symbol id="ic-lock" viewBox="0 0 16 16" shape-rendering="crispEdges">
+      <rect x="5" y="3" width="6" height="1" fill="#888"/>
+      <rect x="4" y="4" width="1" height="3" fill="#888"/>
+      <rect x="11" y="4" width="1" height="3" fill="#888"/>
+      <rect x="3" y="7" width="10" height="6" fill="#bbb"/>
+      <rect x="3" y="13" width="10" height="1" fill="#888"/>
+      <rect x="7" y="9" width="2" height="2" fill="#444"/>
+      <rect x="7" y="11" width="2" height="1" fill="#444"/>
+    </symbol>
+    <symbol id="ic-target" viewBox="0 0 24 24">
+      <circle cx="12" cy="12" r="10" fill="none" stroke="#88ddff" stroke-width="2"/>
+      <circle cx="12" cy="12" r="6" fill="none" stroke="#88ddff" stroke-width="1.5"/>
+      <circle cx="12" cy="12" r="2.5" fill="#ff6644"/>
+    </symbol>
+    <symbol id="ic-check" viewBox="0 0 24 24">
+      <circle cx="12" cy="12" r="10" fill="#88dd88" stroke="#3a7a3a" stroke-width="1.2"/>
+      <path d="M7 12l3.5 3.5L17 9" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+    </symbol>
+    <symbol id="ic-bonus" viewBox="0 0 24 24">
+      <path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 16.8l-6.2 4.5 2.4-7.4L2 9.4h7.6z" fill="#ffd24a" stroke="#a06c10" stroke-width="0.8" stroke-linejoin="round"/>
+    </symbol>
+    <symbol id="ic-party" viewBox="0 0 24 24">
+      <path d="M3 21l5.5-15 11 11z" fill="#ff6644" stroke="#a52a1a" stroke-width="0.6" stroke-linejoin="round"/>
+      <path d="M5 16l2 2-3 3z" fill="#ffd24a"/>
+      <circle cx="14" cy="6" r="1.6" fill="#ffd24a"/>
+      <circle cx="19" cy="10" r="1.3" fill="#88ddff"/>
+      <circle cx="20" cy="5" r="1.2" fill="#aaffaa"/>
+      <circle cx="11" cy="3" r="1.2" fill="#ff66cc"/>
+    </symbol>
+  </defs>
+</svg>
+
+<div id="stage"><canvas id="cv" width="360" height="640"></canvas></div>
+
+<!-- ホーム画面 -->
+<div id="home">
+  <button id="menuBtn" aria-label="メニュー">≡</button>
+  <div id="menuPop" class="hidden">
+    <button class="mItem" data-action="howto"><span>あそびかた</span></button>
+    <button class="mItem" data-action="bgm"><span>BGM</span><span class="toggleVal on" id="bgmToggleVal">ON</span></button>
+    <button class="mItem" data-action="sfx"><span>こうかおん</span><span class="toggleVal on" id="sfxToggleVal">ON</span></button>
+    <button class="mItem" data-action="credit"><span>クレジット</span></button>
+  </div>
+  <h1>トラフィックおじさん</h1>
+  <div class="stats">
+    <div class="pill"><svg class="ic"><use href="#ic-trophy"/></svg> さいこう <b id="bestVal">0</b></div>
+    <div class="pill"><svg class="ic"><use href="#ic-coin"/></svg> ちょきん <b id="coinsVal">0</b>円</div>
+  </div>
+  <!-- タブナビ -->
+  <div class="tabs">
+    <button class="tab active" data-tab="main">ホーム</button>
+    <button class="tab" data-tab="uncle">おじさん</button>
+    <button class="tab" data-tab="shop">ショップ</button>
+  </div>
+  <!-- ホームタブ -->
+  <div class="tabContent" data-tab="main">
+    <div class="currentUncle" id="currentUncle"></div>
+    <div class="carryBox hidden" id="carryBox">
+      <div class="carryTitle">もって いく アイテム（1プレイ 1こ）</div>
+      <label class="carryOpt" data-kind="none">
+        <input type="radio" name="carry" value="none" checked>
+        <span class="carryLabel">もたない</span>
+      </label>
+      <label class="carryOpt hidden" data-kind="horn">
+        <input type="radio" name="carry" value="horn">
+        <svg class="ic"><use href="#ic-burst"/></svg>
+        <span class="carryLabel">クラクション（×<span id="carryHornCount">0</span>）</span>
+      </label>
+      <label class="carryOpt hidden" data-kind="slow">
+        <input type="radio" name="carry" value="slow">
+        <svg class="ic"><use href="#ic-x2"/></svg>
+        <span class="carryLabel">スロウ（×<span id="carrySlowCount">0</span>）</span>
+      </label>
+    </div>
+    <div class="useTicket hidden" id="useShieldBox" style="background:rgba(255,210,74,.14);border-color:#ffd24a;">
+      <label>
+        <input type="checkbox" id="useShieldChk">
+        <svg class="ic"><use href="#ic-shield"/></svg>
+        エアバッグを つかう
+        <span class="small">（もちもの <span id="shieldCount">0</span> こ）</span>
+      </label>
+    </div>
+    <button id="startBtn">スタート</button>
+    <p class="small" style="margin-top:8px;opacity:.6;">ドラッグで しわけ／まちがえると 追突／パトカーは さわるな！</p>
+    <div class="missions">
+      <h3>きょうのチャレンジ</h3>
+      <ul id="missionList"></ul>
+    </div>
+    <div class="history">
+      <h3>さいきんのスコア</h3>
+      <ol id="historyList"><li class="empty">まだ プレイ なし</li></ol>
+    </div>
+  </div>
+  <!-- おじさんタブ -->
+  <div class="tabContent hidden" data-tab="uncle">
+    <p class="small" style="margin:6px 0 4px;opacity:.8;">じゆうに えらべる おじさん。<br>それぞれ こせい が ある！</p>
+    <div class="uncleList" id="uncleList"></div>
+  </div>
+  <!-- ショップタブ -->
+  <div class="tabContent hidden" data-tab="shop">
+    <div class="shop">
+      <div class="shopItem" data-item="zenmetsu">
+        <div class="row">
+          <div class="icon"><svg class="ic ic-lg"><use href="#ic-burst"/></svg></div>
+          <div class="info">
+            <div class="name">クラクション</div>
+            <div class="desc">場の車を いっせいに 通過させる</div>
+            <div class="own">もちもの: <span class="ownCount">0</span> こ</div>
+          </div>
+        </div>
+        <button class="buyBtn">50円 で 1こ かう</button>
+      </div>
+      <div class="shopItem" data-item="coindouble">
+        <div class="row">
+          <div class="icon"><svg class="ic ic-lg"><use href="#ic-x2"/></svg></div>
+          <div class="info">
+            <div class="name">スロウ</div>
+            <div class="desc">10びょうかん ぜんたいが ゆっくり（0.7ばいそく）になる</div>
+            <div class="own">もちもの: <span class="ownCount">0</span> こ</div>
+          </div>
+        </div>
+        <button class="buyBtn">100円 で 1こ かう</button>
+      </div>
+      <div class="shopItem" data-item="shield">
+        <div class="row">
+          <div class="icon"><svg class="ic ic-lg"><use href="#ic-shield"/></svg></div>
+          <div class="info">
+            <div class="name">エアバッグ</div>
+            <div class="desc">1ゲームちゅう さいしょの ついとつを 1かい ふせぐ</div>
+            <div class="own">もちもの: <span class="ownCount">0</span> こ</div>
+            <div class="lockNote hidden">🔒 ベスト 350てん こえると 解禁</div>
+          </div>
+        </div>
+        <button class="buyBtn">200円 で 1こ かう</button>
+      </div>
+      <h3 style="margin:14px 0 6px;font-size:15px;text-align:center;opacity:.8;letter-spacing:.2em;color:#88ddff;">きゅうじん</h3>
+      <p class="small" style="text-align:center;opacity:.7;margin:0 0 8px;">あたらしい おじさんを やとう（かいきり・1かいだけ）</p>
+      <div id="hireList"></div>
+    </div>
+  </div>
+</div>
+
+<!-- デイリーログイン -->
+<div id="daily" class="hidden">
+  <div class="box">
+    <h2><svg class="ic ic-lg"><use href="#ic-gift"/></svg> しゅっきんボーナス</h2>
+    <div class="day">れんぞく <span id="dailyStreak">1</span> にちめ</div>
+    <div class="streakDots" id="streakDots"></div>
+    <div class="amt">+ <span id="dailyCoins">0</span> <svg class="ic"><use href="#ic-coin"/></svg></div>
+    <div class="extra hidden" id="dailyBonus">＋ ぜんめつ ×1</div>
+    <button id="dailyOk">うけとる</button>
+  </div>
+</div>
+
+<!-- あそびかたモーダル -->
+<div id="howto" class="hidden">
+  <div class="card">
+    <h2>あそびかた</h2>
+    <p>あなたは ベテラン 交通整備員。上から来る車を 種類にあわせて 「あか」「あお」レーンに ドラッグで 誘導しよう！うまく さばくと 給料が もらえるぞ。</p>
+
+    <h3>くるま の しゅるい</h3>
+    <div class="row"><div class="marker m-red">●</div><div>あか車：あかレーンへ ゆうどう</div></div>
+    <div class="row"><div class="marker m-blk">●</div><div>あお車：あおレーンへ ゆうどう</div></div>
+    <div class="row"><div class="marker m-brn">×</div><div>パトカー：さわるな！触ったら 逮捕でアウト</div></div>
+    <div class="row"><div class="marker m-yel">⚡</div><div>あおり運転：とつぜん 加速する キレ気味の黄色いやつ</div></div>
+    <div class="row"><div class="marker m-pur">★</div><div>救急車：タップで 道をゆずる（3びょう つよスロー）</div></div>
+    <div class="row"><div class="marker m-gld">$</div><div>現金輸送車：タップで 給料+30円</div></div>
+
+    <h3>こつ</h3>
+    <p>・れんぞくで さばくと コンボ ×2 ×3 ×5...</p>
+    <p>・しわけ ミスや おっさんの ガマンが きれると 追突 → ゲームオーバー</p>
+    <p>・レベルが あがると 投入口が 増えていく（最大 9 こ）</p>
+
+    <h3>どうぐ</h3>
+    <p>・もって いけるのは 1プレイ 1こ だけ。プレイちゅうに 右下を タップで つかえる</p>
+    <p>・クラクション：場の車を いっせいに 通過させる</p>
+    <p>・スロウ：10びょうかん ぜんたいが 0.7ばいそく になる（タップで発動）</p>
+    <p>・エアバッグ：1ゲームちゅう さいしょの ついとつを 1かい じどう で ふせぐ（ベスト350こえると 解禁）</p>
+
+    <button class="closeBtn" id="howtoClose">とじる</button>
+  </div>
+</div>
+
+<!-- クレジットモーダル -->
+<div id="credit" class="hidden">
+  <div class="card">
+    <h2>クレジット</h2>
+    <h3>BGM</h3>
+    <p><a href="https://otologic.jp/" target="_blank" rel="noopener" style="color:#88ddff;text-decoration:underline;">OtoLogic</a> 様（GB-General-C02）</p>
+    <h3>こうかおん</h3>
+    <p class="small">Web Audio API による合成（オリジナル）</p>
+    <p class="small">クラクション音：<a href="https://otologic.jp/" target="_blank" rel="noopener" style="color:#88ddff;text-decoration:underline;">OtoLogic</a> 様（Car_Horn-Fake03）</p>
+    <button class="closeBtn" id="creditClose">とじる</button>
+  </div>
+</div>
+
+<!-- ゲームオーバー画面 -->
+<div id="gameover" class="hidden">
+  <h1>追突事故！</h1>
+  <p>スコア</p>
+  <div class="big" id="goScore">0</div>
+  <p class="gain">きゅうりょう + <b id="goCoins">0</b>円</p>
+  <p class="small" id="goBest"></p>
+  <img id="shareCard" class="shareCard" alt=""/>
+  <div class="actions">
+    <button id="goShare" class="shareBtn">シェア</button>
+    <button id="goHome">ホームへ</button>
+  </div>
+</div>
+<script>
+(() => {
+'use strict';
+
+const cv = document.getElementById('cv');
+const ctx = cv.getContext('2d');
+const homeEl = document.getElementById('home');
+const gameoverEl = document.getElementById('gameover');
+const startBtn = document.getElementById('startBtn');
+const goHomeBtn = document.getElementById('goHome');
+const goShareBtn = document.getElementById('goShare');
+const shareCardEl = document.getElementById('shareCard');
+const bestValEl = document.getElementById('bestVal');
+const coinsValEl = document.getElementById('coinsVal');
+const buyZenBtnEl = homeEl.querySelector('.shopItem[data-item="zenmetsu"] .buyBtn');
+const buyTcBtnEl = homeEl.querySelector('.shopItem[data-item="coindouble"] .buyBtn');
+const buyShieldBtnEl = homeEl.querySelector('.shopItem[data-item="shield"] .buyBtn');
+const useShieldChk = document.getElementById('useShieldChk');
+const carryBoxEl = document.getElementById('carryBox');
+function getCarrySelection(){
+  const el = document.querySelector('input[name="carry"]:checked');
+  return el ? el.value : 'none';
+}
+function setCarrySelection(v){
+  const el = document.querySelector('input[name="carry"][value="'+v+'"]');
+  if(el) el.checked = true;
+}
+const historyListEl = document.getElementById('historyList');
+const goScoreEl = document.getElementById('goScore');
+const goCoinsEl = document.getElementById('goCoins');
+const goBestEl = document.getElementById('goBest');
+const W = cv.width, H = cv.height;
+
+// 永続データ
+const ZEN_PRICE = 50;
+const TICKET_PRICE = 100;
+const SHIELD_PRICE = 200;
+const SHIELD_UNLOCK_BEST = 350;  // ベスト350てん超えで解禁
+// 旧キー(bomb_*)から新キー(traffic_*)へ一度だけ移行
+(function migrateOldSave(){
+  if(localStorage.getItem('traffic_best') !== null) return;
+  if(localStorage.getItem('bomb_best') === null) return;
+  ['best','coins','owned','history','daily','lastLogin','loginStreak'].forEach(k=>{
+    const v = localStorage.getItem('bomb_' + k);
+    if(v !== null) localStorage.setItem('traffic_' + k, v);
+  });
+})();
+// おじさんカタログ（新人だけ初期パーク、他は個性のみ。ベテラン以降はショップ「求人」で雇用）
+const UNCLES = [
+  {
+    id:'rookie', name:'新人 ぴよきち', flavor:'やる気は いっちょまえ。',
+    badgeBg:'#88dd88', badgeBorder:'#3a7a3a', badgeText:'新',
+    img:'uncle-rookie.webp',
+    perks:{ startHorn: 1 },
+    cheers:['よっしゃ！','いけ！','どんとこい！','ナイス！'],
+  },
+  {
+    id:'veteran', name:'ベテラン あつし', flavor:'たんたんと さばく。',
+    badgeBg:'#ffaa66', badgeBorder:'#a05010', badgeText:'熟',
+    img:'uncle-veteran.webp',
+    perks:{ noDashy: true },
+    cheers:['ふむ。','よし。','つぎ。','まだまだ。'],
+  },
+  {
+    id:'master', name:'名人 ぎんじろう', flavor:'たっかんの きょうち。',
+    badgeBg:'#aa66ff', badgeBorder:'#4a2080', badgeText:'名',
+    img:'uncle-master.webp',
+    perks:{ rareUp: 2 },
+    cheers:['みごと。','うむ。','よかろう。','ふっ。'],
+  },
+];
+const HIRE_COST = 2500; // 求人ガチャ価格（ランダムで未雇用おじさんが1人）
+function uncleById(id){ return UNCLES.find(u=>u.id===id) || UNCLES[0]; }
+
+const SAVE = {
+  load(){
+    const owned = JSON.parse(localStorage.getItem('traffic_owned') || '{"zenmetsu":1}');
+    if(typeof owned.coinDouble !== 'number') owned.coinDouble = 0;
+    if(typeof owned.shield !== 'number') owned.shield = 0;
+    let uncleId = localStorage.getItem('traffic_uncle') || 'rookie';
+    if(!UNCLES.some(u=>u.id===uncleId)) uncleId = 'rookie';
+    let unlockedUncles = JSON.parse(localStorage.getItem('traffic_uncles_unlocked') || '["rookie"]');
+    if(!Array.isArray(unlockedUncles) || unlockedUncles.length === 0) unlockedUncles = ['rookie'];
+    if(!unlockedUncles.includes('rookie')) unlockedUncles.unshift('rookie');
+    if(!unlockedUncles.includes(uncleId)) unlockedUncles.push(uncleId);
+    return {
+      best: +localStorage.getItem('traffic_best') || 0,
+      coins: +localStorage.getItem('traffic_coins') || 0,
+      owned,
+      history: JSON.parse(localStorage.getItem('traffic_history') || '[]'),
+      daily: JSON.parse(localStorage.getItem('traffic_daily') || 'null'),
+      uncleId,
+      unlockedUncles,
+    };
+  },
+  save(s){
+    localStorage.setItem('traffic_best', s.best|0);
+    localStorage.setItem('traffic_coins', s.coins|0);
+    localStorage.setItem('traffic_owned', JSON.stringify(s.owned));
+    localStorage.setItem('traffic_history', JSON.stringify(s.history));
+    if(s.daily) localStorage.setItem('traffic_daily', JSON.stringify(s.daily));
+    if(s.uncleId) localStorage.setItem('traffic_uncle', s.uncleId);
+    if(s.unlockedUncles) localStorage.setItem('traffic_uncles_unlocked', JSON.stringify(s.unlockedUncles));
+  },
+};
+const save = SAVE.load();
+
+// オーディオの ON/OFF 設定（localStorage で永続化）
+const audioPrefs = {
+  bgm: localStorage.getItem('traffic_bgm') !== '0',
+  sfx: localStorage.getItem('traffic_sfx') !== '0',
+};
+function saveAudioPrefs(){
+  localStorage.setItem('traffic_bgm', audioPrefs.bgm ? '1' : '0');
+  localStorage.setItem('traffic_sfx', audioPrefs.sfx ? '1' : '0');
+}
+
+// オーディオ基盤：AudioContext は効果音とBGMで1本だけ共有する。
+// （iOSはコンテキストを複数持つと、画面収録などで音声セッションが再構成されたときに
+//   それぞれ別々にリサンプリングされて音割れの原因になる）
+// 出口には必ずリミッターを挟み、効果音とBGMが重なってもピークが振り切れないようにする。
+const audioCore = {
+  ctx: null, master: null, failed: false,
+  get(){
+    if(this.failed) return null;
+    if(!this.ctx){
+      try{
+        const AC = window.AudioContext || window.webkitAudioContext;
+        if(!AC) throw new Error('no AudioContext');
+        this.ctx = new AC();
+        const limiter = this.ctx.createDynamicsCompressor();
+        limiter.threshold.value = -3;
+        limiter.knee.value = 0;
+        limiter.ratio.value = 12;
+        limiter.attack.value = 0.003;
+        limiter.release.value = 0.15;
+        limiter.connect(this.ctx.destination);
+        this.master = limiter;
+      }catch(e){ this.failed = true; this.ctx = null; return null; }
+    }
+    // 収録開始やバックグラウンド復帰でsuspendedになることがあるので毎回拾う
+    if(this.ctx.state === 'suspended'){ try{ this.ctx.resume(); }catch(_){} }
+    return this.ctx;
+  },
+};
+
+// 効果音（Web Audio で合成、ファイル不要）
+const sfx = {
+  ctx: null, master: null, enabled: true,
+  init(){
+    const ctx = audioCore.get();
+    if(!ctx){ this.enabled = false; return; }
+    if(this.ctx) return;
+    this.ctx = ctx;
+    this.master = ctx.createGain();
+    this.master.gain.value = 0.5;
+    // 効果音は square/sawtooth 主体で可聴域上限まで倍音が乗る。そのままだと
+    // 画面収録のAAC再エンコードで折り返し歪みになり「音割れっぽく」聞こえるので、
+    // 10kHz以上だけ落とす。ピコピコ感は保ったまま耳に刺さる高域を削る。
+    const lp = ctx.createBiquadFilter();
+    lp.type = 'lowpass';
+    lp.frequency.value = 10000;
+    lp.Q.value = 0.7;
+    this.master.connect(lp);
+    lp.connect(audioCore.master);
+  },
+  beep(freq, dur, type='sine', vol=0.2, slide=0){
+    if(!audioPrefs.sfx) return;
+    this.init();
+    if(!this.enabled || !this.ctx) return;
+    const t = this.ctx.currentTime;
+    const o = this.ctx.createOscillator();
+    const g = this.ctx.createGain();
+    o.type = type;
+    o.frequency.setValueAtTime(freq, t);
+    if(slide) o.frequency.exponentialRampToValueAtTime(Math.max(40, freq+slide), t + dur);
+    g.gain.setValueAtTime(0.0001, t);
+    g.gain.exponentialRampToValueAtTime(vol, t + 0.005);
+    g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+    o.connect(g); g.connect(this.master);
+    o.start(t); o.stop(t + dur + 0.05);
+  },
+  noiseBurst(dur=0.25, vol=0.35){
+    if(!audioPrefs.sfx) return;
+    this.init();
+    if(!this.enabled || !this.ctx) return;
+    const t = this.ctx.currentTime;
+    const buf = this.ctx.createBuffer(1, this.ctx.sampleRate*dur, this.ctx.sampleRate);
+    const data = buf.getChannelData(0);
+    for(let i=0;i<data.length;i++){
+      data[i] = (Math.random()*2-1) * Math.pow(1 - i/data.length, 1.6);
+    }
+    const src = this.ctx.createBufferSource(); src.buffer = buf;
+    const g = this.ctx.createGain(); g.gain.value = vol;
+    const lp = this.ctx.createBiquadFilter(); lp.type='lowpass'; lp.frequency.value = 800;
+    src.connect(lp); lp.connect(g); g.connect(this.master);
+    src.start(t);
+  },
+  pickup(){ this.beep(720, 0.05, 'square', 0.13); },
+  release(){ this.beep(540, 0.04, 'square', 0.10); },
+  place(combo){
+    const base = 740 + Math.min(8, combo|0)*80;
+    this.beep(base, 0.06, 'triangle', 0.18);
+    setTimeout(()=>this.beep(base*1.5, 0.07, 'triangle', 0.16), 55);
+  },
+  combo(mul){
+    this.beep(900, 0.05, 'square', 0.18);
+    setTimeout(()=>this.beep(1200, 0.05, 'square', 0.18), 50);
+    setTimeout(()=>this.beep(1500, 0.08, 'square', 0.18), 100);
+    if(mul >= 5) setTimeout(()=>this.beep(1900, 0.10, 'square', 0.18), 150);
+  },
+  bomb(){
+    this.beep(110, 0.18, 'sawtooth', 0.30, -70);
+    this.noiseBurst(0.28, 0.42);
+  },
+  item(){ // ぜんめつ
+    this.beep(1200, 0.08, 'square', 0.18);
+    this.noiseBurst(0.18, 0.30);
+  },
+  coin(){ this.beep(1400, 0.05, 'sine', 0.18); setTimeout(()=>this.beep(1900, 0.08, 'sine', 0.16), 60); },
+  buy(){ this.coin(); },
+  warn(){
+    const now = performance.now();
+    if(now - (this._lastWarn||0) < 90) return;
+    this._lastWarn = now;
+    this.beep(1800, 0.04, 'square', 0.14);
+  },
+  daily(){
+    this.beep(523, 0.10, 'triangle', 0.22);
+    setTimeout(()=>this.beep(659, 0.10, 'triangle', 0.22), 100);
+    setTimeout(()=>this.beep(784, 0.16, 'triangle', 0.22), 200);
+  },
+  tap(){ this.beep(1100, 0.025, 'square', 0.10); },
+  // クラクション「プッ プッ」: loud=true で短間隔リピート可。5パターンからランダム再生。
+  // ※現状どこからも呼ばれていない（鳴らす場面が未実装）。鳴らすようにしたとき、
+  //   HTMLAudioだと共有AudioContextの外を通ってリミッターが効かないので、
+  //   最初からデコードして audioCore 経由で鳴らす作りにしてある。
+  _hornSrcs: ['horn-1.mp3','horn-2.mp3','horn-3.mp3','horn-4.mp3','horn-5.mp3'],
+  _hornBufs: null,
+  _hornLoading: null,
+  _loadHorns(){
+    if(this._hornLoading) return this._hornLoading;
+    this.init();
+    if(!this.enabled || !this.ctx) return null;
+    const ctx = this.ctx;
+    this._hornLoading = Promise.all(this._hornSrcs.map(src =>
+      fetch(src)
+        .then(r => r.arrayBuffer())
+        .then(arr => new Promise((res, rej) => ctx.decodeAudioData(arr, res, rej)))
+        .catch(() => null)
+    )).then(bufs => (this._hornBufs = bufs.filter(Boolean)));
+    return this._hornLoading;
+  },
+  _playHorn(){
+    if(!this.ctx || !this._hornBufs || !this._hornBufs.length) return;
+    const buf = this._hornBufs[Math.floor(Math.random()*this._hornBufs.length)];
+    const s = this.ctx.createBufferSource(); s.buffer = buf;
+    const g = this.ctx.createGain(); g.gain.value = 0.55;
+    s.connect(g); g.connect(this.master);
+    s.start(this.ctx.currentTime);
+  },
+  honk(loud){
+    if(!audioPrefs.sfx) return;
+    const now = performance.now();
+    const cd = loud ? 700 : 1500;
+    if(now - (this._lastHonk||0) < cd) return;
+    this._lastHonk = now;
+    if(this._hornBufs){ this._playHorn(); return; }
+    const p = this._loadHorns();
+    if(p) p.then(() => this._playHorn());   // 初回だけデコード完了後に鳴る
+  },
+  // 追突事故：急ブレーキ→金属衝突→クラクション
+  crash(){
+    this.beep(220, 0.18, 'sawtooth', 0.28, -130);
+    this.noiseBurst(0.32, 0.50);
+    setTimeout(()=> {
+      this.beep(440, 0.20, 'square', 0.22);
+      this.beep(380, 0.20, 'square', 0.18);
+    }, 70);
+  },
+  // 逮捕（パトカーに触れた）：サイレン2音
+  arrest(){
+    this.beep(880, 0.22, 'square', 0.20);
+    setTimeout(()=> this.beep(660, 0.22, 'square', 0.20), 220);
+    setTimeout(()=> this.beep(880, 0.22, 'square', 0.20), 440);
+  },
+};
+
+// BGM（OtoLogic GB-General-C02、WebAudio でギャップレスループ）
+const bgmAudio = {
+  ctx: null, buffer: null, source: null, gain: null, loading: null,
+  async init(){
+    if(this.buffer) return true;
+    if(this.loading) return this.loading;
+    this.loading = (async () => {
+      const ctx = audioCore.get();   // 効果音と同じ AudioContext を共有
+      if(!ctx) return false;
+      this.ctx = ctx;
+      this.gain = ctx.createGain();
+      this.gain.gain.value = 0.35;
+      this.gain.connect(audioCore.master);
+      try{
+        const resp = await fetch('bgm-stage.mp3');
+        const arr = await resp.arrayBuffer();
+        this.buffer = await new Promise((res, rej) => this.ctx.decodeAudioData(arr, res, rej));
+        return true;
+      }catch(_){ return false; }
+    })();
+    return this.loading;
+  },
+  async play(){
+    if(!audioPrefs.bgm) return;
+    const ok = await this.init();
+    if(!ok || !this.buffer) return;
+    if(this.ctx.state === 'suspended'){ try{ await this.ctx.resume(); }catch(_){} }
+    if(this.source) return;
+    const s = this.ctx.createBufferSource();
+    s.buffer = this.buffer;
+    s.loop = true;
+    s.connect(this.gain);
+    s.start(0);
+    this.source = s;
+  },
+  pause(){
+    if(!this.source) return;
+    try{ this.source.stop(); }catch(_){}
+    try{ this.source.disconnect(); }catch(_){}
+    this.source = null;
+  },
+};
+function bgmPlay(){ bgmAudio.play(); }
+function bgmPause(){ bgmAudio.pause(); }
+// ページ非表示/離脱で BGM を確実に止める（PWA→ホーム画面復帰時も含む）
+document.addEventListener('visibilitychange', () => {
+  if(document.hidden) bgmPause();
+  else if(state && state.running) bgmPlay();
+});
+window.addEventListener('pagehide', bgmPause);
+
+// レイアウト
+const HUD_H = 36;
+const FLOOR = {x:6, y:HUD_H+8, w:W-12, h:328};   // 徘徊エリア（広め）
+const ZONE_Y = FLOOR.y + FLOOR.h + 8;
+const ZONE_H = H - ZONE_Y - 8;
+const RED = {x:8,         y:ZONE_Y, w:W/2-12, h:ZONE_H, color:'#b8324a', edge:'#ff8090'}; // 左：あか
+const BLK = {x:W/2+4,     y:ZONE_Y, w:W/2-12, h:ZONE_H, color:'#2a4078', edge:'#88aaff'}; // 右：あお
+
+// アイテム枠（右下にオーバーレイ）
+const ITEM_SIZE = 56, ITEM_MARGIN = 8;
+const ITEM = {x: W - ITEM_SIZE - ITEM_MARGIN, y: H - ITEM_SIZE - ITEM_MARGIN, w: ITEM_SIZE, h: ITEM_SIZE};
+
+// state
+const state = {
+  bombs: [],
+  score: 0,
+  spawnTimer: 0,
+  spawnInterval: 1900,
+  level: 1,
+  running: false,
+  dragging: null,
+  dragOffset: {x:0,y:0},
+  shake: 0,
+  flash: 0,
+  flashColor: '#fff',
+  particles: [],
+  angryFaces: [],  // 追突/逮捕時に窓から飛び出す顔アップ
+  gameOver: false,
+  itemCount: 1,
+  itemMax: 3,
+  activeItemKind: null, // 'horn' | 'slow' | null
+  borrowedHorn: 0,      // 開始時に save から1借りた horn の本数
+  borrowedSlow: 0,      // 開始時に save から1借りた slow の本数
+  scoreSinceItem: 0,
+  lastPointer: {x:0, y:0, active:false},
+  combo: 0,
+  comboTimer: 0,
+  scoreFloaters: [],
+  runStats: {maxCombo:0, brownAvoided:0, itemsUsed:0},
+  coinDoubleActive: false,
+  shieldActive: false,         // シールドを装備してこのゲームを開始したか
+  shieldUsedThisRun: false,    // 既に1回シールドで助かったか
+  bonus: {active:false, timeLeft:0, coinsThisStage:0},
+  // 紫ボムによるスロー
+  slowLeft: 0,
+  timeScale: 1,
+};
+
+const COMBO_TIMEOUT = 1400; // ms 連続正解の猶予
+function comboMul(c){
+  if(c >= 20) return 10;
+  if(c >= 10) return 5;
+  if(c >= 6)  return 3;
+  if(c >= 3)  return 2;
+  return 1;
+}
+
+// デイリーチャレンジ
+const MISSION_POOL = [
+  {id:'combo', target:5,  desc:'コンボ 5れんぞく',     reward:{coins:80}},
+  {id:'combo', target:10, desc:'コンボ 10れんぞく',    reward:{coins:200, items:{zenmetsu:1}}},
+  {id:'combo', target:15, desc:'コンボ 15れんぞく',    reward:{coins:300, items:{coinDouble:1}}},
+  {id:'score', target:30, desc:'1ゲームで 30てん',     reward:{coins:80}},
+  {id:'score', target:80, desc:'1ゲームで 80てん',     reward:{coins:200, items:{coinDouble:1}}},
+  {id:'score', target:150,desc:'1ゲームで 150てん',    reward:{coins:400, items:{zenmetsu:2}}},
+  {id:'brown', target:3,  desc:'ちゃいろを 3体 スルー',reward:{coins:120}},
+  {id:'brown', target:5,  desc:'ちゃいろを 5体 スルー',reward:{coins:200}},
+  {id:'item',  target:1,  desc:'アイテムを 1かい つかう', reward:{coins:60}},
+];
+
+function todayStr(){
+  const d = new Date();
+  return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+}
+
+function ensureDailyMissions(){
+  const t = todayStr();
+  if(!save.daily || save.daily.date !== t){
+    // 3つランダム抽選（重複なし）
+    const pool = [...MISSION_POOL];
+    const picks = [];
+    for(let i=0;i<3 && pool.length>0;i++){
+      const idx = Math.floor(Math.random()*pool.length);
+      picks.push({...pool[idx], progress:0, done:false, claimed:false});
+      pool.splice(idx,1);
+    }
+    save.daily = {date:t, missions:picks};
+    SAVE.save(save);
+  }
+}
+
+function evaluateMissionsAfterRun(){
+  if(!save.daily) return [];
+  const newlyDone = [];
+  save.daily.missions.forEach(m=>{
+    if(m.done) return;
+    let val = 0;
+    if(m.id==='combo')  val = state.runStats.maxCombo;
+    if(m.id==='score')  val = state.score;
+    if(m.id==='brown')  val = state.runStats.brownAvoided;
+    if(m.id==='item')   val = state.runStats.itemsUsed;
+    if(val > m.progress) m.progress = val;
+    if(m.progress >= m.target && !m.done){
+      m.done = true;
+      newlyDone.push(m);
+      // 報酬付与
+      save.coins += m.reward.coins;
+      if(m.reward.items?.zenmetsu) save.owned.zenmetsu += m.reward.items.zenmetsu;
+      if(m.reward.items?.coinDouble) save.owned.coinDouble += m.reward.items.coinDouble;
+    }
+  });
+  return newlyDone;
+}
+
+function rewardLabel(r){
+  let s = `+${r.coins}`;
+  if(r.items?.zenmetsu) s += ` +ぜんめつ×${r.items.zenmetsu}`;
+  if(r.items?.coinDouble) s += ` +スロウ×${r.items.coinDouble}`;
+  return s;
+}
+
+function uncleBadgeContent(u){
+  return u.img
+    ? `<img src="${encodeURI(u.img)}" alt="${u.badgeText}" loading="lazy">`
+    : u.badgeText;
+}
+
+// 「いまのおじさん」をホームタブに表示
+function renderCurrentUncle(){
+  const el = document.getElementById('currentUncle');
+  if(!el) return;
+  const u = uncleById(save.uncleId);
+  el.innerHTML = `
+    <div class="portrait" style="background:${u.badgeBg};">${uncleBadgeContent(u)}</div>
+    <div class="info">
+      <div class="label">いま の おじさん</div>
+      <div class="name">${u.name}</div>
+      <div class="flavor">${u.flavor}</div>
+    </div>`;
+}
+
+// おじさんタブの描画（雇用済みのみ表示・現在選択中をハイライト）
+function renderUncleTab(){
+  const list = document.getElementById('uncleList');
+  if(!list) return;
+  const unlocked = save.unlockedUncles || ['rookie'];
+  const cards = UNCLES.filter(u => unlocked.includes(u.id)).map(u => {
+    const isActive = save.uncleId === u.id;
+    const perkParts = [];
+    if(u.perks.startHorn) perkParts.push(`クラクション +${u.perks.startHorn} で スタート`);
+    if(u.perks.noDashy)   perkParts.push(`あおり運転が おきない`);
+    if(u.perks.rareUp)    perkParts.push(`お金の車・きゅうきゅう車が ×${u.perks.rareUp}ばい でやすい`);
+    const perkLine = perkParts.length
+      ? `<div class="perk">${perkParts.join('<br>')}</div>` : '';
+    const action = isActive
+      ? `<div class="activeLabel">▶ せんたく中</div>`
+      : `<button class="useBtn" data-uncle="${u.id}">えらぶ</button>`;
+    return `<div class="uncleCard ${isActive?'active':''}">
+      <div class="badge" style="background:${u.badgeBg};border-color:${u.badgeBorder};">${uncleBadgeContent(u)}</div>
+      <div class="info">
+        <div class="name">${u.name}</div>
+        <div class="flavor">${u.flavor}</div>
+        ${perkLine}
+        ${action}
+      </div>
+    </div>`;
+  });
+  // 未雇用のヒント
+  const unhired = UNCLES.filter(u => !unlocked.includes(u.id)).length;
+  if(unhired > 0){
+    cards.push(`<p class="small" style="text-align:center;opacity:.6;margin:6px 0;">→ ショップの「きゅうじん」で あと ${unhired} 人 やとえる</p>`);
+  }
+  list.innerHTML = cards.join('');
+  list.querySelectorAll('.useBtn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      sfx.tap();
+      save.uncleId = btn.dataset.uncle;
+      SAVE.save(save);
+      renderUncleTab();
+      renderCurrentUncle();
+    });
+  });
+}
+
+// 求人ガチャ（ショップタブ内）の描画
+function renderHireList(){
+  const list = document.getElementById('hireList');
+  if(!list) return;
+  const unlocked = save.unlockedUncles || ['rookie'];
+  const remaining = UNCLES.filter(u => !unlocked.includes(u.id));
+  if(remaining.length === 0){
+    list.innerHTML = `<p class="small" style="text-align:center;opacity:.6;">ぜんいん やとった！おじさんタブで えらべる</p>`;
+    return;
+  }
+  const can = save.coins >= HIRE_COST;
+  const btn = can
+    ? `<button class="buyBtn" id="hireGachaBtn">${HIRE_COST} <svg class="ic"><use href="#ic-coin"/></svg> で やとう（ランダム）</button>`
+    : `<button class="buyBtn" disabled>コインが ${HIRE_COST - save.coins} こ たりない</button>`;
+  list.innerHTML = `<div class="shopItem" id="hireGachaCard">
+    <div class="row">
+      <div class="icon" style="background:#3a3a48;color:#ffd24a;font-size:26px;font-weight:bold;">？</div>
+      <div class="info">
+        <div class="name">？？？</div>
+        <div class="desc">あたらしい おじさんが ランダムで くる<br>のこり ${remaining.length} 人</div>
+      </div>
+    </div>
+    ${btn}
+  </div>`;
+  const gachaBtn = document.getElementById('hireGachaBtn');
+  if(gachaBtn){
+    gachaBtn.addEventListener('click', () => {
+      if(save.coins < HIRE_COST) return;
+      const pool = UNCLES.filter(u => !(save.unlockedUncles||['rookie']).includes(u.id));
+      if(pool.length === 0) return;
+      const newGuy = pool[Math.floor(Math.random()*pool.length)];
+      save.coins -= HIRE_COST;
+      save.unlockedUncles = [...(save.unlockedUncles||['rookie']), newGuy.id];
+      save.uncleId = newGuy.id;  // 雇ったら自動で選択
+      SAVE.save(save);
+      sfx.daily();
+      // 当選演出（カードを差し替えて 2.2秒後 refreshHome）
+      const card = document.getElementById('hireGachaCard');
+      if(card){
+        card.style.borderColor = '#ffd24a';
+        card.style.background = 'rgba(255,210,74,.18)';
+        const portrait = newGuy.img
+          ? `<img src="${encodeURI(newGuy.img)}" alt="${newGuy.badgeText}" style="width:100%;height:100%;object-fit:cover;image-rendering:pixelated;">`
+          : newGuy.badgeText;
+        card.innerHTML = `<div class="row">
+          <div class="icon" style="background:${newGuy.badgeBg};border-color:${newGuy.badgeBorder};color:#fff;font-size:22px;font-weight:bold;overflow:hidden;">${portrait}</div>
+          <div class="info">
+            <div class="name">やとった！</div>
+            <div class="desc"><b>${newGuy.name}</b><br>${newGuy.flavor}</div>
+          </div>
+        </div>`;
+      }
+      coinsValEl.textContent = save.coins;
+      setTimeout(() => refreshHome(), 2200);
+    });
+  }
+}
+
+function renderMissions(){
+  const ul = document.getElementById('missionList');
+  if(!save.daily){ ul.innerHTML = ''; return; }
+  ul.innerHTML = save.daily.missions.map(m=>{
+    const ratio = Math.min(1, m.progress / m.target);
+    const icon = m.done ? '#ic-check' : '#ic-target';
+    return `<li class="${m.done?'done':''}">
+      <div class="mLine1">
+        <svg class="ic"><use href="${icon}"/></svg>
+        <span class="name">${m.desc}</span>
+        <span class="reward">${rewardLabel(m.reward)}</span>
+      </div>
+      <div class="mBar"><div class="mFill" style="width:${ratio*100}%"></div></div>
+      <div class="mProgress">${m.progress}/${m.target}</div>
+    </li>`;
+  }).join('');
+}
+
+// ホーム画面の表示更新
+function refreshHome(){
+  bestValEl.textContent = save.best;
+  coinsValEl.textContent = save.coins;
+  // ぜんめつ
+  const zenItem = homeEl.querySelector('.shopItem[data-item="zenmetsu"]');
+  zenItem.querySelector('.ownCount').textContent = (save.owned.zenmetsu||0);
+  const zenBtn = zenItem.querySelector('.buyBtn');
+  zenBtn.disabled = save.coins < ZEN_PRICE;
+  zenBtn.innerHTML = (save.coins < ZEN_PRICE)
+    ? `コインが ${ZEN_PRICE - save.coins} こ たりない`
+    : `${ZEN_PRICE} <svg class="ic"><use href="#ic-coin"/></svg> で 1こ かう`;
+  // 2倍チケット
+  const tcItem = homeEl.querySelector('.shopItem[data-item="coindouble"]');
+  tcItem.querySelector('.ownCount').textContent = (save.owned.coinDouble||0);
+  const tcBtn = tcItem.querySelector('.buyBtn');
+  tcBtn.disabled = save.coins < TICKET_PRICE;
+  tcBtn.innerHTML = (save.coins < TICKET_PRICE)
+    ? `コインが ${TICKET_PRICE - save.coins} こ たりない`
+    : `${TICKET_PRICE} <svg class="ic"><use href="#ic-coin"/></svg> で 1こ かう`;
+  // 持っていくアイテム ラジオ
+  const hornN = save.owned.zenmetsu || 0;
+  const slowN = save.owned.coinDouble || 0;
+  document.getElementById('carryHornCount').textContent = hornN;
+  document.getElementById('carrySlowCount').textContent = slowN;
+  const hornOpt = carryBoxEl.querySelector('.carryOpt[data-kind="horn"]');
+  const slowOpt = carryBoxEl.querySelector('.carryOpt[data-kind="slow"]');
+  hornOpt.classList.toggle('hidden', hornN <= 0);
+  slowOpt.classList.toggle('hidden', slowN <= 0);
+  const wasShown = !carryBoxEl.classList.contains('hidden');
+  if(hornN > 0 || slowN > 0){
+    carryBoxEl.classList.remove('hidden');
+    if(!wasShown){
+      // 初出時のみ自動選択（horn 優先）
+      setCarrySelection(hornN > 0 ? 'horn' : 'slow');
+    }
+  } else {
+    carryBoxEl.classList.add('hidden');
+  }
+  // 選択肢が在庫切れになっていれば修正
+  const cur = getCarrySelection();
+  if(cur === 'horn' && hornN <= 0) setCarrySelection(slowN > 0 ? 'slow' : 'none');
+  if(cur === 'slow' && slowN <= 0) setCarrySelection(hornN > 0 ? 'horn' : 'none');
+  // シールド（ベスト350こえると解禁）
+  const shieldUnlocked = save.best >= SHIELD_UNLOCK_BEST;
+  const shItem = homeEl.querySelector('.shopItem[data-item="shield"]');
+  shItem.querySelector('.ownCount').textContent = (save.owned.shield||0);
+  shItem.classList.toggle('locked', !shieldUnlocked);
+  shItem.querySelector('.lockNote').classList.toggle('hidden', shieldUnlocked);
+  const shBtn = shItem.querySelector('.buyBtn');
+  if(!shieldUnlocked){
+    shBtn.disabled = true;
+    shBtn.innerHTML = `🔒 ベスト ${SHIELD_UNLOCK_BEST} こえると 解禁`;
+  } else {
+    shBtn.disabled = save.coins < SHIELD_PRICE;
+    shBtn.innerHTML = (save.coins < SHIELD_PRICE)
+      ? `コインが ${SHIELD_PRICE - save.coins} こ たりない`
+      : `${SHIELD_PRICE} <svg class="ic"><use href="#ic-coin"/></svg> で 1こ かう`;
+  }
+  // シールド使用トグル
+  const useShBox = document.getElementById('useShieldBox');
+  document.getElementById('shieldCount').textContent = (save.owned.shield||0);
+  if(save.owned.shield > 0){
+    useShBox.classList.remove('hidden');
+  } else {
+    useShBox.classList.add('hidden');
+    useShieldChk.checked = false;
+  }
+  // ミッション
+  renderMissions();
+  // おじさん・求人
+  renderCurrentUncle();
+  renderUncleTab();
+  renderHireList();
+  // 履歴
+  if(save.history.length === 0){
+    historyListEl.innerHTML = '<li class="empty">まだ プレイ なし</li>';
+  } else {
+    historyListEl.innerHTML = save.history.slice(0,10).map((h,i)=>
+      `<li><span>#${i+1}</span><span>${h.score} てん</span></li>`
+    ).join('');
+  }
+}
+
+function showHome(){
+  ensureDailyMissions();
+  homeEl.classList.remove('hidden');
+  gameoverEl.classList.add('hidden');
+  refreshHome();
+  bgmPause();
+}
+function hideHome(){
+  homeEl.classList.add('hidden');
+}
+
+// ========= 車スプライト（ドット絵） =========
+// 起動時に1回 bake、描画時は拡大コピー＋imageSmoothingEnabled=false でドット絵維持
+const CAR_SPRITES = {};
+const CAR_SPRITE_W = 24, CAR_SPRITE_H = 14;
+function bakeCarSprite(type){
+  const off = document.createElement('canvas');
+  off.width = CAR_SPRITE_W; off.height = CAR_SPRITE_H;
+  const o = off.getContext('2d');
+  const PAL = {
+    red:    { body:'#d24a64', win:'#88ddff', tire:'#1a1a1a', hi:'#ff8aa3' },
+    black:  { body:'#3a5db8', win:'#88ddff', tire:'#1a1a1a', hi:'#6a8de8' }, // 青セダン
+    brown:  { body:'#ffffff', win:'#88ddff', tire:'#000',    hi:'#dddddd' }, // パトカー
+    gold:   { body:'#e0a818', win:'#88ddff', tire:'#1a1a1a', hi:'#ffeb70' }, // 現金輸送車
+    purple: { body:'#ffffff', win:'#88ddff', tire:'#1a1a1a', hi:'#dddddd' }, // 救急車
+  };
+  const p = PAL[type] || PAL.black;
+  // ボディ下部
+  o.fillStyle = p.body;
+  o.fillRect(1, 7, 22, 5);
+  // 屋根
+  o.fillRect(5, 3, 14, 4);
+  // 窓
+  o.fillStyle = p.win;
+  o.fillRect(7, 4, 4, 3);
+  o.fillRect(13, 4, 4, 3);
+  // タイヤ
+  o.fillStyle = p.tire;
+  o.fillRect(3, 11, 4, 3);
+  o.fillRect(17, 11, 4, 3);
+  // ハイライト
+  o.fillStyle = p.hi;
+  o.fillRect(21, 7, 1, 1);
+  o.fillRect(2, 7, 1, 1);
+  // 種類別ディテール
+  if(type === 'brown'){
+    // パトカー：下半分を黒、赤色灯
+    o.fillStyle = '#1c1c22';
+    o.fillRect(1, 9, 22, 2);
+    o.fillStyle = '#ff3344';
+    o.fillRect(10, 1, 2, 2);
+    o.fillStyle = '#3344ff';
+    o.fillRect(12, 1, 2, 2);
+  } else if(type === 'gold'){
+    // 現金輸送車：$マーク
+    o.fillStyle = '#000';
+    o.fillRect(10, 8, 1, 4);
+    o.fillRect(13, 8, 1, 4);
+    o.fillRect(11, 9, 2, 1);
+    o.fillStyle = '#ffeb70';
+    o.fillRect(11, 8, 1, 1);
+    o.fillRect(12, 11, 1, 1);
+  } else if(type === 'purple'){
+    // 救急車：赤十字＋車体側面の赤い太ライン＋赤サイレン
+    // （パトカー＝白×黒帯／救急車＝白×赤帯 で一目で違うように）
+    o.fillStyle = '#dd2233';
+    // 車体側面の赤い太ライン（実車ふう。最大の識別ポイント）
+    o.fillRect(1, 10, 22, 1);
+    // 縦棒（窓の隙間〜車体下まで貫通）
+    o.fillRect(11, 4, 2, 8);
+    // 太い横棒
+    o.fillRect(8, 8, 8, 2);
+    // 屋根の赤サイレン（幅広）
+    o.fillStyle = '#ff5566';
+    o.fillRect(10, 1, 4, 2);
+    o.fillStyle = '#ffeebb';
+    o.fillRect(11, 1, 1, 1);
+  }
+  return off;
+}
+['red','black','brown','gold','purple'].forEach(t => {
+  CAR_SPRITES[t] = bakeCarSprite(t);
+});
+
+// 車のシルエット型に切り抜いた白マスク（点滅時に上重ねする用）
+const CAR_SPRITES_WHITE = {};
+function bakeWhiteSilhouette(sprite){
+  const off = document.createElement('canvas');
+  off.width = sprite.width; off.height = sprite.height;
+  const o = off.getContext('2d');
+  o.drawImage(sprite, 0, 0);
+  o.globalCompositeOperation = 'source-in';
+  o.fillStyle = '#ffffff';
+  o.fillRect(0, 0, off.width, off.height);
+  return off;
+}
+Object.keys(CAR_SPRITES).forEach(t => {
+  CAR_SPRITES_WHITE[t] = bakeWhiteSilhouette(CAR_SPRITES[t]);
+});
+
+// 背景画像（朝・夜の2枚をレベルでクロスフェード）
+const bgImg = new Image();
+let bgImgReady = false;
+bgImg.onload = () => { bgImgReady = true; };
+bgImg.src = 'bg.png';
+const bgMorningImg = new Image();
+let bgMorningImgReady = false;
+bgMorningImg.onload = () => { bgMorningImgReady = true; };
+bgMorningImg.src = 'bg-morning.png';
+
+// 顔スプライト（運転手の激怒・警官の怒鳴り）
+function bakeAngryDriverFace(){
+  const off = document.createElement('canvas');
+  off.width = 16; off.height = 16;
+  const o = off.getContext('2d');
+  // 顔（肌色）
+  o.fillStyle = '#f5c089';
+  o.fillRect(4, 3, 8, 11);
+  o.fillRect(3, 4, 1, 9);
+  o.fillRect(12, 4, 1, 9);
+  o.fillRect(2, 5, 1, 7);
+  o.fillRect(13, 5, 1, 7);
+  // 髪（黒、ぼさぼさ）
+  o.fillStyle = '#1a1a1a';
+  o.fillRect(3, 0, 10, 2);
+  o.fillRect(2, 1, 12, 3);
+  o.fillRect(2, 4, 2, 1);
+  o.fillRect(12, 4, 2, 1);
+  // 眉（V字怒り）
+  o.fillRect(4, 6, 2, 1);
+  o.fillRect(5, 5, 1, 1);
+  o.fillRect(10, 6, 2, 1);
+  o.fillRect(10, 5, 1, 1);
+  // X目
+  o.fillStyle = '#000';
+  o.fillRect(4, 7, 1, 1); o.fillRect(5, 8, 1, 1); o.fillRect(4, 9, 1, 1);
+  o.fillRect(5, 7, 1, 1); o.fillRect(4, 8, 1, 1); o.fillRect(5, 9, 1, 1);
+  o.fillRect(10, 7, 1, 1); o.fillRect(11, 8, 1, 1); o.fillRect(10, 9, 1, 1);
+  o.fillRect(11, 7, 1, 1); o.fillRect(10, 8, 1, 1); o.fillRect(11, 9, 1, 1);
+  // 怒鳴る口（開く）
+  o.fillStyle = '#3a1a1a';
+  o.fillRect(6, 11, 4, 2);
+  o.fillStyle = '#fff';
+  o.fillRect(6, 11, 1, 1); o.fillRect(8, 11, 1, 1);
+  // ほっぺの赤
+  o.fillStyle = '#cc4455';
+  o.globalAlpha = 0.55;
+  o.fillRect(3, 9, 1, 2);
+  o.fillRect(12, 9, 1, 2);
+  o.globalAlpha = 1;
+  return off;
+}
+function bakeArrestCopFace(){
+  const off = document.createElement('canvas');
+  off.width = 16; off.height = 16;
+  const o = off.getContext('2d');
+  // 顔
+  o.fillStyle = '#f5c089';
+  o.fillRect(4, 5, 8, 9);
+  o.fillRect(3, 6, 1, 7);
+  o.fillRect(12, 6, 1, 7);
+  // 警察帽（紺）
+  o.fillStyle = '#2a4a98';
+  o.fillRect(2, 1, 12, 3);
+  o.fillRect(3, 0, 10, 1);
+  // 帽子のつば（濃紺）
+  o.fillStyle = '#1a2a58';
+  o.fillRect(2, 4, 12, 1);
+  // バッジ（金）
+  o.fillStyle = '#ffd24a';
+  o.fillRect(7, 2, 2, 1);
+  // 眉（怒り）
+  o.fillStyle = '#1a1a1a';
+  o.fillRect(4, 7, 2, 1);
+  o.fillRect(10, 7, 2, 1);
+  // 目（睨み）
+  o.fillStyle = '#000';
+  o.fillRect(5, 8, 1, 2);
+  o.fillRect(10, 8, 1, 2);
+  // 怒鳴る口（大きく開く）
+  o.fillStyle = '#3a1a1a';
+  o.fillRect(6, 11, 4, 3);
+  o.fillStyle = '#cc3344';
+  o.fillRect(7, 12, 2, 1);
+  return off;
+}
+const FACE_SPRITES = {
+  driver: bakeAngryDriverFace(),
+  cop: bakeArrestCopFace(),
+};
+
+// アイテムアイコン（クラクション・スロー）のドット絵
+function bakeHornSprite(){
+  const off = document.createElement('canvas');
+  off.width = 16; off.height = 16;
+  const o = off.getContext('2d');
+  o.fillStyle = '#ffcc33';
+  o.fillRect(2, 5, 8, 6);
+  o.fillRect(10, 4, 2, 8);
+  o.fillRect(12, 3, 1, 10);
+  o.fillStyle = '#a06c10';
+  o.fillRect(2, 10, 8, 1);
+  o.fillRect(10, 11, 2, 1);
+  o.fillRect(12, 12, 1, 1);
+  o.fillStyle = '#cc8a10';
+  o.fillRect(0, 7, 2, 2);
+  o.fillStyle = '#ff5577';
+  o.fillRect(14, 5, 1, 2);
+  o.fillRect(14, 9, 1, 2);
+  o.fillRect(15, 7, 1, 2);
+  return off;
+}
+function bakeClockSprite(){
+  const off = document.createElement('canvas');
+  off.width = 16; off.height = 16;
+  const o = off.getContext('2d');
+  // 紫の円外枠
+  o.fillStyle = '#a060ff';
+  o.fillRect(5, 2, 6, 1);
+  o.fillRect(3, 3, 2, 1); o.fillRect(11, 3, 2, 1);
+  o.fillRect(2, 4, 1, 2); o.fillRect(13, 4, 1, 2);
+  o.fillRect(1, 5, 1, 6); o.fillRect(14, 5, 1, 6);
+  o.fillRect(2, 11, 1, 2); o.fillRect(13, 11, 1, 2);
+  o.fillRect(3, 13, 2, 1); o.fillRect(11, 13, 2, 1);
+  o.fillRect(5, 14, 6, 1);
+  // 文字盤
+  o.fillStyle = '#fff';
+  o.fillRect(5, 3, 6, 1);
+  o.fillRect(3, 4, 10, 1);
+  o.fillRect(2, 5, 12, 6);
+  o.fillRect(3, 11, 10, 1);
+  o.fillRect(5, 13, 6, 1);
+  // 針
+  o.fillStyle = '#5a1a9a';
+  o.fillRect(7, 5, 2, 3);
+  o.fillRect(8, 7, 3, 1);
+  o.fillRect(7, 7, 2, 2);
+  return off;
+}
+const ITEM_SPRITES = {
+  horn: bakeHornSprite(),
+  clock: bakeClockSprite(),
+};
+
+// ========= 車 =========
+class Bomb{
+  constructor(type, side='top', pos=0.5){
+    this.type = type;            // 'black' | 'red' | 'brown' (brown=触ると即終了)
+    this.side = side;            // 'left' | 'right' | 'top'
+    this.r = 23;
+    if(side==='left'){
+      this.x = -24;
+      this.y = FLOOR.y + 16 + (FLOOR.h-32) * pos;
+    } else if(side==='right'){
+      this.x = W + 24;
+      this.y = FLOOR.y + 16 + (FLOOR.h-32) * pos;
+    } else { // top
+      this.x = FLOOR.x + 16 + (FLOOR.w-32) * pos;
+      this.y = FLOOR.y + 86;  // 投入口の真下から出てくる
+    }
+    this.state = 'enter';        // enter | wander | drag | placed
+    this.zone = null;            // 'red' | 'black' (placed時)
+    // レベルで導火線が短くなる：Lv1で9.5秒 → 上限で5秒
+    // パトカーは触らなければ安全。一定時間で去る。
+    // 現金輸送車/救急車はタップで取らないと去る（爆発しない）
+    this.fuseTime = (type==='brown') ? 7000
+                  : (type==='gold')  ? 4500
+                  : (type==='purple')? 5500
+                  : Math.max(5500, 9500 - (state.level-1) * 200);
+    this.fuseLeft = this.fuseTime;
+    this.targetX = 0;
+    this.targetY = 0;
+    this.wanderTimer = 0;
+    this.wiggle = Math.random()*Math.PI*2;
+    this.bobPhase = Math.random()*Math.PI*2;
+    this.facing = 1;
+    this._dead = false;
+    this._exploded = false;
+    // 車毎の個性
+    this.speedMul = 0.55 + Math.random()*1.05;          // 0.55〜1.6倍速
+    this.wanderMinT = 350 + Math.random()*800;
+    this.wanderMaxT = this.wanderMinT + 500 + Math.random()*1700;
+    this.idleChance = 0.10 + Math.random()*0.30;        // 10〜40%でその場休憩
+    this.bobAmp    = 1.0 + Math.random()*1.6;           // 上下ゆれ幅
+    // 気まぐれダッシュ（spawnBombで有効化）
+    this.dashy = false;
+    this.dashing = false;
+    this.dashCooldown = 1800 + Math.random()*2000;
+    this.dashLeft = 0;
+    this.dashVx = 0; this.dashVy = 0;
+    // パトカー用：上を通った指の総移動距離を蓄積
+    this.swipeAccum = 0;     // px単位
+    this.hitFlash = 0;       // ヒット直後の閃光
+  }
+  pickTarget(area){
+    if(Math.random() < this.idleChance){
+      // その場で休憩
+      this.targetX = this.x;
+      this.targetY = this.y;
+      this.wanderTimer = 250 + Math.random()*700;
+      return;
+    }
+    // ターゲット範囲：近距離 or 遠距離をランダム選択（歩き方の多様化）
+    const span = Math.random() < 0.4 ? 0.4 : 1.0;       // 短距離 or 自由移動
+    const cx = this.x, cy = this.y;
+    const halfW = (area.w-32)*0.5*span;
+    const halfH = (area.h-32)*0.5*span;
+    let tx = cx + (Math.random()*2-1)*halfW;
+    let ty = cy + (Math.random()*2-1)*halfH;
+    // エリア内にクランプ
+    tx = Math.max(area.x+16, Math.min(area.x+area.w-16, tx));
+    ty = Math.max(area.y+16, Math.min(area.y+area.h-16, ty));
+    this.targetX = tx;
+    this.targetY = ty;
+    this.wanderTimer = this.wanderMinT + Math.random()*(this.wanderMaxT - this.wanderMinT);
+  }
+  walkTo(dt, baseSpeed){
+    const dx = this.targetX - this.x, dy = this.targetY - this.y;
+    const d = Math.hypot(dx,dy);
+    if(d > 1){
+      const sp = baseSpeed * this.speedMul * dt;
+      this.x += dx/d * Math.min(sp, d);
+      this.y += dy/d * Math.min(sp, d);
+      this.facing = dx >= 0 ? 1 : -1;
+    }
+  }
+  update(dt){
+    this.wiggle += dt*0.005;
+    this.bobPhase += dt*0.01;
+    if(this.hitFlash > 0) this.hitFlash = Math.max(0, this.hitFlash - dt*0.003);
+    if(this.state==='enter'){
+      const sp = dt*0.05;
+      let arrived = false;
+      if(this.side==='left'){
+        this.x += sp; this.facing = 1;
+        if(this.x > FLOOR.x + 24) arrived = true;
+      } else if(this.side==='right'){
+        this.x -= sp; this.facing = -1;
+        if(this.x < FLOOR.x + FLOOR.w - 24) arrived = true;
+      } else { // top
+        this.y += sp;
+        if(this.y > FLOOR.y + 140) arrived = true;
+      }
+      this.fuseLeft -= dt;
+      if(arrived){
+        this.state = 'wander';
+        this.pickTarget(FLOOR);
+      }
+    }
+    else if(this.state==='wander'){
+      // 茶は反対側へ一直線に抜ける（うろうろしない）
+      if(this.type==='brown'){
+        if(!this.exitSet){
+          if(this.side==='top'){
+            this.exitX = this.x;
+            this.exitY = FLOOR.y + FLOOR.h + 60;
+          } else if(this.side==='left'){
+            this.exitX = W + 40;
+            this.exitY = this.y;
+          } else { // right
+            this.exitX = -40;
+            this.exitY = this.y;
+          }
+          this.exitSet = true;
+        }
+        const dx = this.exitX - this.x, dy = this.exitY - this.y;
+        const d = Math.hypot(dx, dy);
+        const sp = 0.075 * this.speedMul * dt;
+        if(d > 1){
+          this.x += dx/d * Math.min(sp, d);
+          this.y += dy/d * Math.min(sp, d);
+          this.facing = dx >= 0 ? 1 : -1;
+        }
+        if(this.x < -36 || this.x > W+36 || this.y < -36 || this.y > H+36){
+          this._dead = true;
+          if(state.runStats) state.runStats.brownAvoided++;
+        }
+        this.fuseLeft -= dt;
+        return;
+      }
+      // 気まぐれダッシュ（dashy個体）
+      if(this.dashy){
+        if(this.dashing){
+          this.x += this.dashVx * dt;
+          this.y += this.dashVy * dt;
+          this.facing = this.dashVx >= 0 ? 1 : -1;
+          this.x = Math.max(FLOOR.x+16, Math.min(FLOOR.x+FLOOR.w-16, this.x));
+          this.y = Math.max(FLOOR.y+16, Math.min(FLOOR.y+FLOOR.h-16, this.y));
+          this.dashLeft -= dt;
+          if(this.dashLeft <= 0){
+            this.dashing = false;
+            this.dashCooldown = 1800 + Math.random()*2200;
+            this.pickTarget(FLOOR);
+          }
+          this.fuseLeft -= dt;
+          return;
+        }
+        this.dashCooldown -= dt;
+        if(this.dashCooldown <= 0){
+          this.dashing = true;
+          const a = Math.random()*Math.PI*2;
+          const sp = 0.36 + Math.random()*0.18;
+          this.dashVx = Math.cos(a)*sp;
+          this.dashVy = Math.sin(a)*sp;
+          this.dashLeft = 220 + Math.random()*220;
+          this.fuseLeft -= dt;
+          return;
+        }
+      }
+      this.wanderTimer -= dt;
+      if(this.wanderTimer<=0) this.pickTarget(FLOOR);
+      this.walkTo(dt, 0.04);
+      this.fuseLeft -= dt;
+    }
+    else if(this.state==='placed'){
+      this.wanderTimer -= dt;
+      if(this.wanderTimer<=0) this.pickTarget(this.zone==='red' ? RED : BLK);
+      this.walkTo(dt, 0.025);
+      // 安全：fuseは進まない
+    }
+    if(this.fuseLeft<=0 && !this._exploded && this.state!=='placed'){
+      if(this.type==='brown'){
+        this._dead = true;
+        spawnParticles(this.x, this.y, '#a07a4e', 8);
+        if(state.runStats) state.runStats.brownAvoided++;
+      } else if(this.type==='gold'){
+        // 取り逃した：チャリンと消える
+        this._dead = true;
+        spawnParticles(this.x, this.y, '#ffd24a', 10);
+      } else if(this.type==='purple'){
+        // 取り逃した：紫粒子で消える
+        this._dead = true;
+        spawnParticles(this.x, this.y, '#b07aff', 10);
+      } else {
+        this._exploded = true;
+      }
+    }
+  }
+  draw(){
+    const safe = this.state==='placed';
+    const blink = !safe && this.fuseLeft < 2500;
+    const fast  = !safe && this.fuseLeft < 1100;
+    const blinkOn = blink ? (Math.floor(performance.now()/(fast?100:220))%2===0) : false;
+    const wob = Math.sin(this.bobPhase)*this.bobAmp*0.6;
+
+    ctx.save();
+    ctx.translate(this.x, this.y + wob);
+    ctx.scale(this.facing, 1);
+
+    // かげ
+    ctx.fillStyle = 'rgba(0,0,0,.35)';
+    ctx.beginPath(); ctx.ellipse(2, this.r+1, this.r*0.95, 4, 0, 0, Math.PI*2); ctx.fill();
+
+    // 車スプライト（ドット絵を拡大コピー）
+    const sprite = CAR_SPRITES[this.type] || CAR_SPRITES.black;
+    const SCALE = 2.0;
+    const sw = CAR_SPRITE_W * SCALE;
+    const sh = CAR_SPRITE_H * SCALE;
+    const prevSmooth = ctx.imageSmoothingEnabled;
+    ctx.imageSmoothingEnabled = false;
+    ctx.drawImage(sprite, -sw/2, -sh/2, sw, sh);
+    if(blinkOn){
+      // 警告点滅：車型の白シルエットを薄く重ねる（元の色が透けて見える）
+      const whiteMask = CAR_SPRITES_WHITE[this.type] || CAR_SPRITES_WHITE.black;
+      ctx.save();
+      ctx.globalAlpha = fast ? 0.85 : 0.62;
+      ctx.drawImage(whiteMask, -sw/2, -sh/2, sw, sh);
+      ctx.restore();
+    }
+    ctx.imageSmoothingEnabled = prevSmooth;
+
+    // タイヤ回転（小さな点で速度感）
+    if(!safe && (this.state==='wander' || this.state==='enter')){
+      const tspin = Math.floor(performance.now()/60) % 2;
+      ctx.fillStyle = 'rgba(255,255,255,.5)';
+      const ty = sh/2 - 2;
+      ctx.fillRect(-sw/2 + 6 + tspin*2, ty, 1, 1);
+      ctx.fillRect( sw/2 - 8 + tspin*2, ty, 1, 1);
+    }
+
+    // 救急車/現金輸送車のキラキラオーラ（タップで取れる合図）
+    if(this.type==='purple' || this.type==='gold'){
+      const t = performance.now() * 0.005;
+      const auraColor = this.type==='purple' ? '#ff8899' : '#ffe070';
+      ctx.strokeStyle = auraColor;
+      ctx.lineWidth = 2;
+      ctx.globalAlpha = 0.55 + 0.25 * Math.sin(t*2);
+      ctx.beginPath(); ctx.arc(0,0,this.r+4,0,Math.PI*2); ctx.stroke();
+      ctx.globalAlpha = 1;
+      ctx.fillStyle = auraColor;
+      for(let i=0;i<5;i++){
+        const a = t + i*Math.PI*2/5;
+        const rr = this.r + 8 + Math.sin(t*3+i)*1.5;
+        const sx = Math.cos(a)*rr;
+        const sy = Math.sin(a)*rr;
+        ctx.beginPath();
+        ctx.arc(sx, sy, 1.8, 0, Math.PI*2);
+        ctx.fill();
+      }
+    }
+    // パトカーの「触るな」マーク（赤いオーラ＋ヒット蓄積メーター＋赤色灯フラッシュ）
+    if(this.type==='brown'){
+      const meter = Math.min(1, this.swipeAccum / 80);
+      ctx.strokeStyle = 'rgba(255,40,40,'+ (0.55 + 0.3*Math.sin(performance.now()*0.012)) +')';
+      ctx.lineWidth = 3;
+      ctx.beginPath(); ctx.arc(0,0,this.r+3,0,Math.PI*2); ctx.stroke();
+      if(meter > 0){
+        ctx.strokeStyle = '#ffdd44';
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        ctx.arc(0,0,this.r+6, -Math.PI/2, -Math.PI/2 + Math.PI*2*meter);
+        ctx.stroke();
+      }
+      if(this.hitFlash > 0){
+        ctx.fillStyle = 'rgba(255,255,255,'+ (this.hitFlash*0.5) +')';
+        ctx.beginPath(); ctx.arc(0,0,this.r+8,0,Math.PI*2); ctx.fill();
+      }
+    }
+    // あおり運転：ダッシュ中の速度線
+    if(this.dashy && this.dashing){
+      const len = 14;
+      const dx = this.dashVx, dy = this.dashVy;
+      const m = Math.hypot(dx,dy) || 1;
+      ctx.strokeStyle = 'rgba(255,220,40,.85)';
+      ctx.lineWidth = 2;
+      for(let i=-1;i<=1;i++){
+        ctx.beginPath();
+        ctx.moveTo(-dx/m*this.r*0.7 + i*4, -dy/m*this.r*0.7 + i*4);
+        ctx.lineTo(-dx/m*(this.r*0.7+len) + i*4, -dy/m*(this.r*0.7+len) + i*4);
+        ctx.stroke();
+      }
+    }
+    // あおり運転（黄色系の通常状態）：イライラマーク（赤い「!」）
+    if(this.dashy && !this.dashing){
+      const t = performance.now()*0.012;
+      ctx.fillStyle = 'rgba(255,80,80,'+ (0.7 + 0.3*Math.sin(t)) +')';
+      ctx.fillRect(-1, -this.r-9, 2, 4);
+      ctx.fillRect(-1, -this.r-3, 2, 2);
+    }
+
+    // つかまれている間は焦りの汗（既存ロジック流用）
+    if(state.dragging === this){
+      ctx.scale(this.facing, 1); // 反転打ち消し
+      const t = performance.now() * 0.008;
+      drawSweat( 14 + Math.sin(t)*0.8,      -14 + Math.cos(t*1.3)*0.8, 1.0);
+      drawSweat(-13 + Math.sin(t*1.1)*0.6, -10 + Math.cos(t*0.9)*0.6, 0.75);
+    }
+
+    ctx.restore();
+  }
+}
+
+// 汗（水滴）：フルカラ・グラデ＋ハイライト
+function drawSweat(cx, cy, scale){
+  ctx.save();
+  ctx.translate(cx, cy);
+  ctx.scale(scale, scale);
+  // 水滴のパス（てっぺんが尖り、底が丸い）
+  const path = () => {
+    ctx.beginPath();
+    ctx.moveTo(0, -6);
+    ctx.bezierCurveTo(4.6, -1.5, 4.6, 5.2, 0, 5.2);
+    ctx.bezierCurveTo(-4.6, 5.2, -4.6, -1.5, 0, -6);
+    ctx.closePath();
+  };
+  // 影
+  ctx.fillStyle = 'rgba(0,0,0,.22)';
+  ctx.save();
+  ctx.translate(0.6, 0.8);
+  path(); ctx.fill();
+  ctx.restore();
+  // 本体（青グラデ）
+  const g = ctx.createLinearGradient(0, -6, 0, 5.5);
+  g.addColorStop(0,    '#cdf0ff');
+  g.addColorStop(0.55, '#5cc5ff');
+  g.addColorStop(1,    '#2a7ed8');
+  ctx.fillStyle = g;
+  path(); ctx.fill();
+  // 輪郭
+  ctx.strokeStyle = '#1a4a7a';
+  ctx.lineWidth = 1;
+  path(); ctx.stroke();
+  // ハイライト（左上の白光沢）
+  ctx.fillStyle = 'rgba(255,255,255,0.85)';
+  ctx.beginPath();
+  ctx.ellipse(-1.6, -0.5, 1.1, 2.2, -0.3, 0, Math.PI*2);
+  ctx.fill();
+  // 小さな白点
+  ctx.fillStyle = 'rgba(255,255,255,0.7)';
+  ctx.beginPath();
+  ctx.arc(1.4, 2.6, 0.7, 0, Math.PI*2);
+  ctx.fill();
+  ctx.restore();
+}
+
+// 出現口（ポータル）：レベルが unlock 以上で開放（2レベルにつき1口ずつゆるやかに）
+const PORTALS = [
+  {side:'top',   pos:0.5, unlock:1},  // Lv1: 真ん中の上のみ
+  {side:'top',   pos:0.2, unlock:3},  // Lv3: + 左上
+  {side:'top',   pos:0.8, unlock:5},  // Lv5: + 右上
+  {side:'left',  pos:0.4, unlock:7},  // Lv7: + 左中
+  {side:'right', pos:0.4, unlock:9},  // Lv9: + 右中
+  {side:'left',  pos:0.75,unlock:11}, // Lv11:+ 左下
+  {side:'right', pos:0.75,unlock:13}, // Lv13:+ 右下
+  {side:'top',   pos:0.35,unlock:15}, // Lv15:+ 上の隙間（左）
+  {side:'top',   pos:0.65,unlock:17}, // Lv17:+ 上の隙間（右）
+];
+
+function pickPortal(){
+  const open = PORTALS.filter(p=>p.unlock<=state.level);
+  return open[Math.floor(Math.random()*open.length)];
+}
+
+function pickType(){
+  // ボーナス中は黒/赤のみ（茶も気まぐれもレアもなし）
+  if(state.bonus.active){
+    return Math.random() < 0.5 ? 'black' : 'red';
+  }
+  const brownOnField = state.bombs.filter(b => b.type==='brown' && !b._dead).length;
+  const brownChance = (state.level >= 2 && brownOnField < 1)
+    ? Math.min(0.04, 0.012 + state.level * 0.003)
+    : 0;
+  if(Math.random() < brownChance) return 'brown';
+  // 金ボム（Lv2+）：場に1個まで
+  const goldOnField = state.bombs.filter(b => b.type==='gold' && !b._dead).length;
+  const rareMul = (state.activeUncle && state.activeUncle.perks.rareUp) || 1;
+  if(state.level >= 2 && goldOnField < 1 && Math.random() < 0.025 * rareMul) return 'gold';
+  // 紫ボム（Lv4+）：場に1個まで
+  const purpleOnField = state.bombs.filter(b => b.type==='purple' && !b._dead).length;
+  if(state.level >= 4 && purpleOnField < 1 && Math.random() < 0.018 * rareMul) return 'purple';
+  return Math.random() < 0.5 ? 'black' : 'red';
+}
+
+function startBonusStage(){
+  state.bonus.active = true;
+  state.bonus.timeLeft = 10000;
+  state.bonus.coinsThisStage = 0;
+  // 場の茶を一掃（プレイヤーをスタートで保護）
+  state.bombs.forEach(b=>{
+    if(!b._dead && b.type==='brown' && b.state!=='placed'){
+      b._dead = true;
+      spawnParticles(b.x, b.y, '#ffd24a', 8);
+    }
+  });
+  state.flash = 0.7; state.flashColor = '#ffd24a';
+  sfx.daily();
+}
+
+function endBonusStage(){
+  state.bonus.active = false;
+  sfx.combo(3);
+}
+
+function makeBomb(){
+  const t = pickType();
+  let p;
+  if(t === 'brown'){
+    // 茶は上から出すと仕分けゾーンを突っ切ってしまうため、左右のみに限定
+    const sidePortals = PORTALS.filter(pp => pp.unlock <= state.level && pp.side !== 'top');
+    if(sidePortals.length === 0){
+      // 左右ポータルがまだ無い段階ではフォールバックで通常タイプ
+      const t2 = Math.random() < 0.5 ? 'black' : 'red';
+      const p2 = pickPortal();
+      return new Bomb(t2, p2.side, p2.pos);
+    }
+    p = sidePortals[Math.floor(Math.random()*sidePortals.length)];
+  } else {
+    p = pickPortal();
+  }
+  const b = new Bomb(t, p.side, p.pos);
+  // 気まぐれダッシュ（黄色）：Lv2+ から発動。レベルが上がるほど確率↑（ボーナス中はOFF）
+  // Lv2 → 55% / Lv3 → 60% / Lv5 → 70% / Lv9+ → 上限 90%
+  const noDashy = state.activeUncle && state.activeUncle.perks.noDashy;
+  if(!noDashy && !state.bonus.active && t !== 'brown' && t !== 'gold' && t !== 'purple' && state.level >= 2 && Math.random() < Math.min(0.90, 0.45 + state.level*0.05)){
+    b.dashy = true;
+    b.dashCooldown = 1600 + Math.random()*2000;
+  }
+  return b;
+}
+
+function spawnBomb(){
+  // 未仕分けの「場上の車」上限：レベルが上がっても急に増やさない
+  // Lv1=6 / Lv5=10 / 以降10で頭打ち（個数で殺さず気まぐれ率で殺す）
+  const active = state.bombs.filter(b => !b._dead && b.state !== 'placed').length;
+  const maxActive = Math.min(5 + state.level, 10);
+  if(active >= maxActive) return;
+  state.bombs.push(makeBomb());
+  // 同時2体スポーンは中盤までの限定アクセント。後半は頻度を抑える
+  if(active + 1 < maxActive && state.level >= 5 && state.level < 18 && Math.random() < 0.15){
+    state.bombs.push(makeBomb());
+  }
+}
+
+function spawnParticles(x,y,color,n=18){
+  for(let i=0;i<n;i++){
+    const a = Math.random()*Math.PI*2;
+    const sp = 2 + Math.random()*5;
+    state.particles.push({
+      x,y,
+      vx: Math.cos(a)*sp,
+      vy: Math.sin(a)*sp - 1,
+      life: 600 + Math.random()*400,
+      max: 1000,
+      color,
+      r: 2+Math.random()*3,
+    });
+  }
+}
+
+function explode(bomb){
+  if(bomb._dead) return;
+  // 共通：窓から顔出して怒る演出
+  state.angryFaces.push({
+    x: bomb.x, y: bomb.y - 8,
+    life: 700, max: 700,
+    type: bomb.type === 'brown' ? 'cop' : 'driver',
+  });
+  if(bomb.type === 'brown'){
+    // パトカーに触れて逮捕：罰金 -100円
+    state.runStats.fineApplied = 100;
+    spawnParticles(bomb.x, bomb.y, '#ff3344', 8);
+    spawnParticles(bomb.x, bomb.y, '#3366ff', 8);
+    state.flashColor = '#3366ff';
+    sfx.arrest();
+  } else {
+    // 追突事故：ガラス片＋ボディ片（控えめにして顔アップを主役に）
+    spawnParticles(bomb.x, bomb.y, '#cce0f0', 10);
+    const bodyCol = bomb.type === 'red' ? '#d24a64' : '#3a5db8';
+    spawnParticles(bomb.x, bomb.y, bodyCol, 10);
+    state.flashColor = '#ff3344';
+    sfx.crash();
+  }
+  state.shake = 22;
+  state.flash = 1;
+  bomb._exploded = true;
+  bomb._dead = true;
+  // 連鎖爆発でも endGame は1回だけ予約
+  if(!state._endGameScheduled){
+    state._endGameScheduled = true;
+    setTimeout(endGame, 700);
+  }
+}
+
+function placeBomb(bomb, zoneKey){
+  const correct = (zoneKey==='red' && bomb.type==='red') || (zoneKey==='black' && bomb.type==='black');
+  if(correct){
+    bomb.state = 'placed';
+    bomb.zone = zoneKey;
+    bomb.pickTarget(zoneKey==='red' ? RED : BLK);
+    // コンボ
+    state.combo++;
+    state.comboTimer = 0;
+    if(state.combo > state.runStats.maxCombo) state.runStats.maxCombo = state.combo;
+    const mul = comboMul(state.combo);
+    const before = state.score;
+    state.score = Math.min(9999, state.score + mul);
+    state.scoreFloaters.push({x: bomb.x, y: bomb.y - 10, val: mul, mul: mul, life: 900, max: 900});
+    spawnParticles(bomb.x, bomb.y, '#ffffaa', 8);
+    // ボーナス中はコイン+5を直接付与
+    if(state.bonus.active){
+      const c = 5;
+      save.coins += c;
+      state.bonus.coinsThisStage += c;
+      state.scoreFloaters.push({x: bomb.x, y: bomb.y + 8, val: '+'+c+'C', mul: 5, life: 900, max: 900});
+    }
+    // 効果音
+    const prevTierMul = comboMul(state.combo - 1);
+    if(mul > prevTierMul){
+      sfx.combo(mul);
+      // おじさんのかけ声（個性差）
+      const u = state.activeUncle;
+      if(u && u.cheers && u.cheers.length){
+        const cry = u.cheers[Math.floor(Math.random()*u.cheers.length)];
+        state.scoreFloaters.push({x: bomb.x, y: bomb.y - 28, val: cry, mul: mul, life: 1100, max: 1100, noPrefix: true});
+      }
+    } else {
+      sfx.place(state.combo);
+    }
+    state.spawnInterval = Math.max(540, state.spawnInterval * 0.993);
+    if(Math.floor(state.score/12) > Math.floor(before/12)){
+      state.level++;
+      state.spawnInterval = Math.max(540, state.spawnInterval - 28);
+      // ボーナスステージ発動（10レベルごと）
+      if(state.level % 10 === 0 && !state.bonus.active){
+        startBonusStage();
+      }
+    }
+  }else{
+    // 誤投入：そのゾーンの全ボム＋本体が連鎖爆発
+    explode(bomb);
+    state.bombs.forEach(b=>{
+      if(b._dead) return;
+      if(b.state==='placed' && b.zone===zoneKey){
+        explode(b);
+      }
+    });
+  }
+}
+
+function zoneAt(x,y){
+  if(x>=RED.x && x<=RED.x+RED.w && y>=RED.y && y<=RED.y+RED.h) return 'red';
+  if(x>=BLK.x && x<=BLK.x+BLK.w && y>=BLK.y && y<=BLK.y+BLK.h) return 'black';
+  return null;
+}
+
+function pointInItem(x,y){
+  return x>=ITEM.x && x<=ITEM.x+ITEM.w && y>=ITEM.y && y<=ITEM.y+ITEM.h;
+}
+
+function useItem(){
+  if(state.itemCount <= 0) return;
+  state.itemCount--;
+  state.runStats.itemsUsed++;
+  sfx.item();
+  if(state.dragging){ state.dragging = null; }
+  if(state.activeItemKind === 'slow'){
+    // スロウ：10秒間 0.7倍速
+    state.coinDoubleActive = true;
+    state.slowTicketLeft = 10000;
+    spawnParticles(W*0.5, H*0.5, '#c89aff', 28);
+    spawnParticles(W*0.5, H*0.5, '#ffffff', 10);
+    state.flash = 0.35;
+    state.flashColor = '#c89aff';
+    state.scoreFloaters.push({x: W/2, y: H/2 - 8, val: 'スロウ！', mul: 5, life: 1000, max: 1000, noPrefix: true});
+    return;
+  }
+  // クラクション（horn / 既定）：場上の未仕分けの車を全部除去
+  state.bombs.forEach(b=>{
+    if(b._dead) return;
+    if(b.state==='placed') return;
+    spawnParticles(b.x, b.y, '#ffffff', 14);
+    spawnParticles(b.x, b.y, '#ffd24a', 6);
+    b._dead = true;
+  });
+  state.flash = 0.7;
+  state.flashColor = '#ffffff';
+  state.shake = 14;
+}
+
+// ========= 入力 =========
+function getPos(e){
+  const r = cv.getBoundingClientRect();
+  const t = e.touches ? e.touches[0] : e;
+  const sx = cv.width / r.width;
+  const sy = cv.height / r.height;
+  return {x:(t.clientX - r.left)*sx, y:(t.clientY - r.top)*sy};
+}
+
+function onDown(e){
+  if(!state.running) return;
+  e.preventDefault();
+  const p = getPos(e);
+  // アイテム枠タップ
+  if(pointInItem(p.x, p.y)){
+    useItem();
+    return;
+  }
+  // 指の追跡を開始（パトカーのスワイプ距離計測用）
+  state.lastPointer = {x:p.x, y:p.y, active:true};
+  // 起点が茶の上ならその瞬間の移動量0なのでカウントしない
+  for(let i=state.bombs.length-1;i>=0;i--){
+    const b = state.bombs[i];
+    if(b._dead) continue;
+    if(b.state==='placed') continue;
+    if(b.type==='brown') continue;   // 茶はつかめない（指を通すだけ）
+    const dx = p.x-b.x, dy = p.y-b.y;
+    if(dx*dx+dy*dy <= (b.r+10)*(b.r+10)){
+      // 金ボム：タップで一気にコイン
+      if(b.type==='gold'){
+        const reward = 30;
+        save.coins += reward;
+        SAVE.save(save);
+        coinsValEl.textContent = save.coins;
+        spawnParticles(b.x, b.y, '#ffd24a', 28);
+        spawnParticles(b.x, b.y, '#fff8c8', 12);
+        state.scoreFloaters.push({x:b.x, y:b.y-10, val: reward+'コイン', mul:5, life:1100, max:1100});
+        state.flash = 0.35; state.flashColor = '#ffd24a';
+        sfx.daily();
+        b._dead = true;
+        return;
+      }
+      // 紫ボム：タップで時間スロー
+      if(b.type==='purple'){
+        state.slowLeft = 3000;
+        state.timeScale = 0.4;
+        spawnParticles(b.x, b.y, '#c89aff', 32);
+        spawnParticles(b.x, b.y, '#fff', 10);
+        state.flash = 0.5; state.flashColor = '#aa88ff';
+        sfx.combo(2);
+        b._dead = true;
+        return;
+      }
+      // 通常ボム：ドラッグ開始
+      state.dragging = b;
+      state.dragOffset.x = b.x - p.x;
+      state.dragOffset.y = b.y - p.y;
+      b.state = 'drag';
+      state.bombs.splice(i,1);
+      state.bombs.push(b);
+      sfx.pickup();
+      return;
+    }
+  }
+}
+function onMove(e){
+  if(!state.lastPointer || !state.lastPointer.active) {
+    if(!state.dragging) return;
+  }
+  e.preventDefault();
+  const p = getPos(e);
+  // パトカーの上を通った距離を蓄積（一定以上で逮捕）
+  if(state.lastPointer && state.lastPointer.active){
+    const dx = p.x - state.lastPointer.x;
+    const dy = p.y - state.lastPointer.y;
+    const moved = Math.hypot(dx, dy);
+    if(moved > 0){
+      state.bombs.forEach(b=>{
+        if(b._dead || b.type !== 'brown' || b._exploded) return;
+        const bdx = p.x - b.x, bdy = p.y - b.y;
+        if(bdx*bdx + bdy*bdy <= (b.r+6)*(b.r+6)){
+          b.swipeAccum += moved;
+          b.hitFlash = 1;
+          sfx.warn();
+          if(b.swipeAccum >= 80){
+            explode(b);  // GAME OVER
+          }
+        }
+      });
+    }
+    state.lastPointer.x = p.x;
+    state.lastPointer.y = p.y;
+  }
+  if(state.dragging){
+    state.dragging.x = p.x + state.dragOffset.x;
+    state.dragging.y = p.y + state.dragOffset.y;
+  }
+}
+function onUp(e){
+  if(state.lastPointer) state.lastPointer.active = false;
+  if(!state.dragging) return;
+  e.preventDefault();   // ドラッグ中だけ抑止（UIボタンのclickイベントを潰さない）
+  const b = state.dragging;
+  state.dragging = null;
+  const z = zoneAt(b.x, b.y);
+  if(z){
+    placeBomb(b, z);
+  } else {
+    b.state = 'wander';
+    b.pickTarget(FLOOR);
+  }
+}
+cv.addEventListener('mousedown', onDown);
+cv.addEventListener('mousemove', onMove);
+window.addEventListener('mouseup', onUp);
+cv.addEventListener('touchstart', onDown, {passive:false});
+cv.addEventListener('touchmove', onMove, {passive:false});
+window.addEventListener('touchend', onUp, {passive:false});
+window.addEventListener('touchcancel', onUp, {passive:false});
+
+// ========= 描画 =========
+function drawBg(){
+  // Lv.1〜5: 朝100%, Lv.6〜15: 朝→夜にクロスフェード, Lv.16+: 夜100%
+  const t = Math.max(0, Math.min(1, (state.level - 5) / 10));
+  if(bgMorningImgReady){
+    ctx.drawImage(bgMorningImg, 0, 0, W, H);
+    if(bgImgReady && t > 0){
+      ctx.globalAlpha = t;
+      ctx.drawImage(bgImg, 0, 0, W, H);
+      ctx.globalAlpha = 1;
+    }
+  } else if(bgImgReady){
+    ctx.drawImage(bgImg, 0, 0, W, H);
+  } else {
+    ctx.fillStyle = '#2a2a36';
+    ctx.fillRect(0,0,W,H);
+  }
+}
+
+function drawZones(){
+  const t = performance.now();
+  const dragB = state.dragging;
+  const redOn  = dragB && dragB.type === 'red';
+  const blueOn = dragB && dragB.type === 'black';
+  drawSortZone(RED, '#7a1f30', '#b8324a', '#ff7a92', '#3a0d18', 'あか', '#ff5577', redOn,  t);
+  drawSortZone(BLK, '#1a2c5a', '#2a4078', '#9ab8ff', '#0a1430', 'あお', '#5577cc', blueOn, t);
+}
+
+function drawSortZone(zone, baseDark, baseLight, edgeBright, edgeShadow, label, accent, highlight, t){
+  const x = zone.x, y = zone.y, w = zone.w, h = zone.h;
+  ctx.save();
+  // 1) 床塗り（縦グラデ）— 背景画像が透ける半透明
+  const grad = ctx.createLinearGradient(x, y, x, y+h);
+  grad.addColorStop(0,  baseDark);
+  grad.addColorStop(0.6, baseLight);
+  grad.addColorStop(1,  baseDark);
+  ctx.globalAlpha = 0.82;
+  ctx.fillStyle = grad;
+  roundRect(x, y, w, h, 6, true, false);
+  ctx.globalAlpha = 1;
+
+  // 2) 床のスキャン線（ドット感）
+  ctx.save();
+  ctx.beginPath(); roundRect(x+2, y+2, w-4, h-4, 4, false, false); ctx.clip();
+  ctx.globalAlpha = 0.10;
+  ctx.fillStyle = '#000';
+  for(let yy = y+3; yy < y+h-3; yy += 3){
+    ctx.fillRect(x+2, yy, w-4, 1);
+  }
+  ctx.restore();
+
+  // 3) ハザード縞（下端 4px）
+  ctx.save();
+  ctx.beginPath(); roundRect(x, y, w, h, 6, false, false); ctx.clip();
+  const stripeH = 5;
+  const stripeW = 8;
+  for(let i=-stripeH; i<w+stripeH; i+=stripeW){
+    ctx.fillStyle = ((Math.floor(i/stripeW))%2===0) ? '#ffd24a' : '#1a1a26';
+    ctx.beginPath();
+    ctx.moveTo(x+i, y+h-stripeH);
+    ctx.lineTo(x+i+stripeW, y+h-stripeH);
+    ctx.lineTo(x+i+stripeW+stripeH, y+h);
+    ctx.lineTo(x+i+stripeH, y+h);
+    ctx.closePath();
+    ctx.fill();
+  }
+  ctx.restore();
+
+  // 4) 中央の大きな下向き矢印（ドット絵風）
+  const cx = x + w/2;
+  const cy = y + h/2 + 2;
+  drawZoneArrow(cx, cy, accent, highlight, t);
+
+  // 5) 縁取り（外：濃い影 / 内：明るいハイライト）
+  ctx.strokeStyle = edgeShadow;
+  ctx.lineWidth = 3;
+  roundRect(x, y, w, h, 6, false, true);
+  ctx.strokeStyle = edgeBright;
+  ctx.lineWidth = 1.5;
+  roundRect(x+2, y+2, w-4, h-4, 4, false, true);
+
+  // 6) コーナーブラケット（強調）
+  const cb = 7;
+  ctx.fillStyle = edgeBright;
+  ctx.fillRect(x-1, y-1, cb, 2); ctx.fillRect(x-1, y-1, 2, cb);
+  ctx.fillRect(x+w-cb+1, y-1, cb, 2); ctx.fillRect(x+w-1, y-1, 2, cb);
+  ctx.fillRect(x-1, y+h-1, cb, 2); ctx.fillRect(x-1, y+h-cb+1, 2, cb);
+  ctx.fillRect(x+w-cb+1, y+h-1, cb, 2); ctx.fillRect(x+w-1, y+h-cb+1, 2, cb);
+
+  // 7) 上部の看板（ラベル）
+  const signW = 56, signH = 20;
+  const sx = Math.round(cx - signW/2);
+  const sy = Math.round(y - 9);
+  // 看板の影
+  ctx.fillStyle = 'rgba(0,0,0,.55)';
+  ctx.fillRect(sx+2, sy+2, signW, signH);
+  // 看板本体（ピクセル枠）
+  ctx.fillStyle = '#1a1a26';
+  ctx.fillRect(sx, sy, signW, signH);
+  ctx.fillStyle = accent;
+  ctx.fillRect(sx+2, sy+2, signW-4, signH-4);
+  ctx.fillStyle = '#1a1a26';
+  ctx.fillRect(sx+4, sy+4, signW-8, signH-8);
+  // 留め具（左右の点）
+  ctx.fillStyle = edgeBright;
+  ctx.fillRect(sx-2, sy+signH/2-1, 2, 2);
+  ctx.fillRect(sx+signW, sy+signH/2-1, 2, 2);
+  // ラベル文字
+  ctx.fillStyle = '#fff';
+  ctx.font = 'bold 16px "DotGothic16", monospace';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText(label, cx, sy + signH/2 + 1);
+  ctx.textBaseline = 'alphabetic';
+
+  // 8) ハイライト（マッチドラッグ中はパルスする外周）
+  if(highlight){
+    const pulse = 0.5 + 0.5 * Math.sin(t * 0.012);
+    ctx.save();
+    ctx.globalAlpha = 0.35 + 0.45*pulse;
+    ctx.strokeStyle = '#ffffff';
+    ctx.lineWidth = 4;
+    roundRect(x-3, y-3, w+6, h+6, 8, false, true);
+    ctx.globalAlpha = 0.18 + 0.18*pulse;
+    ctx.strokeStyle = accent;
+    ctx.lineWidth = 8;
+    roundRect(x-1, y-1, w+2, h+2, 7, false, true);
+    ctx.restore();
+  }
+
+  ctx.restore();
+}
+
+function drawZoneArrow(cx, cy, color, highlight, t){
+  // ドット絵的な太い下向き矢印（半透明）
+  ctx.save();
+  ctx.translate(cx, cy);
+  // パルス時に少し大きく＋白くなる
+  const sc = highlight ? (1.0 + Math.sin(t*0.012)*0.10) : 1.0;
+  ctx.scale(sc, sc);
+  ctx.globalAlpha = highlight ? 0.55 : 0.30;
+  ctx.fillStyle = '#fff';
+  // 縦バー
+  ctx.fillRect(-4, -14, 8, 14);
+  // 矢じり（三角）
+  ctx.beginPath();
+  ctx.moveTo(-12, 0);
+  ctx.lineTo(12, 0);
+  ctx.lineTo(0, 14);
+  ctx.closePath();
+  ctx.fill();
+  // ハイライト
+  ctx.globalAlpha = highlight ? 0.85 : 0.55;
+  ctx.fillStyle = color;
+  ctx.fillRect(-3, -13, 2, 12);
+  ctx.beginPath();
+  ctx.moveTo(-9, 1);
+  ctx.lineTo(9, 1);
+  ctx.lineTo(0, 11);
+  ctx.closePath();
+  ctx.fill();
+  ctx.restore();
+}
+
+function roundRect(x,y,w,h,r,fill,stroke){
+  ctx.beginPath();
+  ctx.moveTo(x+r,y);
+  ctx.arcTo(x+w,y,x+w,y+h,r);
+  ctx.arcTo(x+w,y+h,x,y+h,r);
+  ctx.arcTo(x,y+h,x,y,r);
+  ctx.arcTo(x,y,x+w,y,r);
+  ctx.closePath();
+  if(fill) ctx.fill();
+  if(stroke) ctx.stroke();
+}
+
+function drawTrophyIcon(cx, cy, size){
+  const s = size/24;
+  ctx.save();
+  ctx.translate(cx, cy);
+  // 取っ手（左右）
+  ctx.strokeStyle = '#ffd24a';
+  ctx.lineWidth = 2*s;
+  ctx.lineCap = 'round';
+  ctx.beginPath();
+  ctx.moveTo(-10*s, -10*s); ctx.lineTo(-12*s,-10*s); ctx.lineTo(-12*s,-6*s); ctx.lineTo(-9*s,-3*s);
+  ctx.moveTo( 10*s, -10*s); ctx.lineTo( 12*s,-10*s); ctx.lineTo( 12*s,-6*s); ctx.lineTo( 9*s,-3*s);
+  ctx.stroke();
+  // カップ
+  ctx.fillStyle = '#ffd24a';
+  ctx.beginPath();
+  ctx.moveTo(-8*s,-11*s);
+  ctx.lineTo(8*s,-11*s);
+  ctx.lineTo(8*s,-7*s);
+  ctx.bezierCurveTo(8*s,-2*s, 4*s, 1*s, 0, 1*s);
+  ctx.bezierCurveTo(-4*s, 1*s, -8*s,-2*s, -8*s,-7*s);
+  ctx.closePath();
+  ctx.fill();
+  // 台座
+  ctx.fillStyle = '#c8951a';
+  ctx.fillRect(-5*s, 1*s, 10*s, 3*s);
+  ctx.fillStyle = '#8a6510';
+  ctx.fillRect(-7*s, 4*s, 14*s, 3*s);
+  ctx.restore();
+}
+
+function drawHud(){
+  ctx.fillStyle = 'rgba(0,0,0,.55)';
+  ctx.fillRect(0,0,W,HUD_H);
+  // SCORE（左）
+  const overBest = state.score > save.best;
+  ctx.fillStyle = overBest ? '#ffd24a' : '#fff';
+  ctx.font = 'bold 17px "DotGothic16", monospace';
+  ctx.textAlign = 'left';
+  ctx.fillText(`SCORE ${state.score}`, 10, 22);
+  // BEST（中央）
+  ctx.fillStyle = '#ffd24a';
+  ctx.textAlign = 'center';
+  // BEST：左に小さなトロフィーをCanvasで描く
+  ctx.save();
+  ctx.translate(W/2 - 30, 14);
+  drawTrophyIcon(0, 0, 14);
+  ctx.restore();
+  ctx.fillText(`${save.best}`, W/2 + 8, 22);
+  // Lv（右）
+  ctx.fillStyle = '#fff';
+  ctx.textAlign = 'right';
+  ctx.fillText(`Lv.${state.level}`, W-10, 22);
+  // シールド装備中インジケータ（左上、SCOREの下）
+  if(state.shieldActive && !state.shieldUsedThisRun){
+    drawShieldBadge(12, HUD_H + 10);
+  }
+}
+
+function drawShieldBadge(x, y){
+  ctx.save();
+  // 黄色枠
+  ctx.fillStyle = '#ffd24a';
+  ctx.fillRect(x+2, y, 12, 1);
+  ctx.fillRect(x+1, y+1, 14, 1);
+  ctx.fillRect(x, y+2, 1, 8);
+  ctx.fillRect(x+15, y+2, 1, 8);
+  ctx.fillRect(x+1, y+10, 1, 2);
+  ctx.fillRect(x+14, y+10, 1, 2);
+  ctx.fillRect(x+2, y+12, 1, 1);
+  ctx.fillRect(x+13, y+12, 1, 1);
+  ctx.fillRect(x+3, y+13, 2, 1);
+  ctx.fillRect(x+11, y+13, 2, 1);
+  ctx.fillRect(x+5, y+14, 6, 1);
+  // 内側ブルー
+  ctx.fillStyle = '#3a5db8';
+  ctx.fillRect(x+2, y+2, 12, 8);
+  ctx.fillRect(x+3, y+10, 10, 2);
+  ctx.fillRect(x+5, y+12, 6, 1);
+  ctx.fillRect(x+5, y+13, 6, 1);
+  // 白十字
+  ctx.fillStyle = '#fff';
+  ctx.fillRect(x+7, y+3, 2, 7);
+  ctx.fillRect(x+5, y+5, 6, 2);
+  ctx.restore();
+}
+
+function drawChutes(){
+  // 解放済みのポータル位置に投入口を描画（上／左／右）
+  ctx.save();
+  PORTALS.forEach(p=>{
+    if(p.unlock > state.level) return;
+    if(p.side === 'top'){
+      const cx = FLOOR.x + 16 + (FLOOR.w-32) * p.pos;
+      const cy = FLOOR.y + 78;   // 指の届く位置まで下げる
+      // 影（厚み）
+      ctx.fillStyle = 'rgba(0,0,0,.5)';
+      roundRect(cx-16, cy-4, 32, 14, 4, true, false);
+      // 本体（外枠）
+      ctx.fillStyle = '#3b3b48';
+      roundRect(cx-16, cy-7, 32, 11, 4, true, false);
+      ctx.strokeStyle = '#caa84a';
+      ctx.lineWidth = 2;
+      roundRect(cx-16, cy-7, 32, 11, 4, false, true);
+      // 暗いスリット
+      ctx.fillStyle = '#08080d';
+      roundRect(cx-12, cy-3, 24, 6, 2, true, false);
+      // ハイライト
+      ctx.fillStyle = 'rgba(255,255,255,.18)';
+      ctx.fillRect(cx-10, cy-6, 20, 1);
+    } else if(p.side === 'left'){
+      const cy = FLOOR.y + 16 + (FLOOR.h-32) * p.pos;
+      const cx = FLOOR.x;
+      // 影
+      ctx.fillStyle = 'rgba(0,0,0,.5)';
+      roundRect(cx-4, cy-16, 14, 32, 4, true, false);
+      // 本体
+      ctx.fillStyle = '#3b3b48';
+      roundRect(cx-7, cy-16, 11, 32, 4, true, false);
+      ctx.strokeStyle = '#caa84a';
+      ctx.lineWidth = 2;
+      roundRect(cx-7, cy-16, 11, 32, 4, false, true);
+      // 暗いスリット
+      ctx.fillStyle = '#08080d';
+      roundRect(cx-3, cy-12, 6, 24, 2, true, false);
+      // ハイライト
+      ctx.fillStyle = 'rgba(255,255,255,.18)';
+      ctx.fillRect(cx-6, cy-10, 1, 20);
+    } else if(p.side === 'right'){
+      const cy = FLOOR.y + 16 + (FLOOR.h-32) * p.pos;
+      const cx = FLOOR.x + FLOOR.w;
+      // 影
+      ctx.fillStyle = 'rgba(0,0,0,.5)';
+      roundRect(cx-10, cy-16, 14, 32, 4, true, false);
+      // 本体
+      ctx.fillStyle = '#3b3b48';
+      roundRect(cx-4, cy-16, 11, 32, 4, true, false);
+      ctx.strokeStyle = '#caa84a';
+      ctx.lineWidth = 2;
+      roundRect(cx-4, cy-16, 11, 32, 4, false, true);
+      // 暗いスリット
+      ctx.fillStyle = '#08080d';
+      roundRect(cx-3, cy-12, 6, 24, 2, true, false);
+      // ハイライト
+      ctx.fillStyle = 'rgba(255,255,255,.18)';
+      ctx.fillRect(cx+5, cy-10, 1, 20);
+    }
+  });
+  ctx.restore();
+}
+
+function drawItem(){
+  const x = ITEM.x, y = ITEM.y, s = ITEM.w;
+  const active = state.itemCount > 0;
+  const kind = state.activeItemKind || 'horn';
+  const sprite = (kind === 'slow') ? ITEM_SPRITES.clock : ITEM_SPRITES.horn;
+  const label = (kind === 'slow') ? 'スロウ' : 'クラクション';
+  const edge = active ? (kind === 'slow' ? '#c89aff' : '#ffd24a') : '#444';
+  const labelColor = active ? edge : '#888';
+  ctx.save();
+  ctx.fillStyle = active ? 'rgba(40,40,55,.92)' : 'rgba(30,30,40,.7)';
+  ctx.fillRect(x, y, s, s);
+  ctx.strokeStyle = edge;
+  ctx.lineWidth = 2;
+  ctx.strokeRect(x+1, y+1, s-2, s-2);
+  const SCALE = 2.4;
+  const sw = 16 * SCALE, sh = 16 * SCALE;
+  const cx = x + s/2, cy = y + s/2 + 2;
+  const prevSmooth = ctx.imageSmoothingEnabled;
+  ctx.imageSmoothingEnabled = false;
+  if(active){
+    ctx.drawImage(sprite, cx - sw/2, cy - sh/2, sw, sh);
+  } else {
+    ctx.globalAlpha = 0.35;
+    ctx.drawImage(sprite, cx - sw/2, cy - sh/2, sw, sh);
+    ctx.globalAlpha = 1;
+  }
+  ctx.imageSmoothingEnabled = prevSmooth;
+  ctx.fillStyle = '#fff';
+  ctx.font = 'bold 15px "DotGothic16", monospace';
+  ctx.textAlign = 'right';
+  ctx.fillText('×'+state.itemCount, x+s-5, y+s-5);
+  ctx.fillStyle = labelColor;
+  ctx.font = 'bold 13px "DotGothic16", monospace';
+  ctx.textAlign = 'center';
+  ctx.fillText(label, cx, y+10);
+  ctx.restore();
+}
+
+function drawParticles(){
+  state.particles.forEach(p=>{
+    const a = Math.max(0, p.life / p.max);
+    ctx.globalAlpha = a;
+    ctx.fillStyle = p.color;
+    ctx.beginPath(); ctx.arc(p.x,p.y,p.r,0,Math.PI*2); ctx.fill();
+  });
+  ctx.globalAlpha = 1;
+}
+
+// 追突/逮捕時の「窓から顔出して怒る」アップ演出
+function drawAngryFaces(){
+  if(state.angryFaces.length === 0) return;
+  const prevSmooth = ctx.imageSmoothingEnabled;
+  ctx.imageSmoothingEnabled = false;
+  for(const f of state.angryFaces){
+    const t = 1 - f.life / f.max;        // 0→1（経過率）
+    // 序盤に膨らむ（pop-in）→中盤キープ→終盤フェード
+    const pop = Math.min(1, t*4);          // 0..1, 最初の25%で1まで
+    const scale = 3.0 + pop*0.6;
+    const sw = 16 * scale, sh = 16 * scale;
+    // 揺れ（怒鳴ってる感）
+    const shakeX = Math.sin(performance.now()*0.04 + f.x) * 1.8;
+    const shakeY = Math.cos(performance.now()*0.05 + f.y) * 1.2;
+    // 終盤フェード
+    const alpha = f.life > f.max*0.25 ? 1 : f.life / (f.max*0.25);
+    ctx.globalAlpha = alpha;
+    const sprite = FACE_SPRITES[f.type] || FACE_SPRITES.driver;
+    ctx.drawImage(sprite, f.x - sw/2 + shakeX, f.y - sh/2 + shakeY, sw, sh);
+  }
+  ctx.globalAlpha = 1;
+  ctx.imageSmoothingEnabled = prevSmooth;
+}
+
+function drawScoreFloaters(){
+  state.scoreFloaters.forEach(f=>{
+    const a = Math.max(0, f.life / f.max);
+    ctx.globalAlpha = a;
+    ctx.fillStyle = f.mul >= 5 ? '#ff66cc' : f.mul >= 3 ? '#ffd24a' : f.mul >= 2 ? '#aaffaa' : '#ffffff';
+    ctx.font = 'bold ' + (16 + f.mul*2) + 'px "DotGothic16", monospace';
+    ctx.textAlign = 'center';
+    ctx.lineWidth = 3;
+    ctx.strokeStyle = '#000';
+    const txt = f.noPrefix ? String(f.val) : `+${f.val}`;
+    ctx.strokeText(txt, f.x, f.y);
+    ctx.fillText(txt, f.x, f.y);
+  });
+  ctx.globalAlpha = 1;
+}
+
+// 夜の視界ビネット（レベル6+ で徐々に強くなる。最大でも端だけ薄く暗くする）
+function drawNightVignette(){
+  const t = Math.max(0, Math.min(1, (state.level - 5) / 10));
+  if(t <= 0) return;
+  ctx.save();
+  const cx = W*0.5, cy = H*0.45;
+  const inner = Math.min(W, H) * 0.30;
+  const outer = Math.max(W, H) * 0.78;
+  const grad = ctx.createRadialGradient(cx, cy, inner, cx, cy, outer);
+  grad.addColorStop(0,    'rgba(0,0,16,0)');
+  grad.addColorStop(0.55, 'rgba(0,0,18,'+ (0.22*t) +')');
+  grad.addColorStop(1,    'rgba(0,0,8,'+ (0.55*t) +')');
+  ctx.fillStyle = grad;
+  ctx.fillRect(0, 0, W, H);
+  ctx.restore();
+}
+
+function drawSlowOverlay(){
+  const burst  = state.slowLeft > 0;          // 紫ボムの強スロー
+  const ticket = state.coinDoubleActive;       // スロウ（10s）の弱スロー
+  if(!burst && !ticket) return;
+  ctx.save();
+  if(burst){
+    const a = Math.min(1, state.slowLeft / 600);
+    ctx.fillStyle = 'rgba(150, 100, 220, '+ (0.18*a) +')';
+    ctx.fillRect(0,0,W,H);
+    const grad = ctx.createLinearGradient(0,0,W,0);
+    grad.addColorStop(0,    'rgba(180,120,255,'+ (0.55*a) +')');
+    grad.addColorStop(0.12, 'rgba(180,120,255,0)');
+    grad.addColorStop(0.88, 'rgba(180,120,255,0)');
+    grad.addColorStop(1,    'rgba(180,120,255,'+ (0.55*a) +')');
+    ctx.fillStyle = grad;
+    ctx.fillRect(0,0,W,H);
+    const t = performance.now() * 0.006;
+    const sc = 1 + Math.sin(t)*0.04;
+    ctx.save();
+    ctx.translate(W/2, HUD_H + 70);
+    ctx.scale(sc, sc);
+    ctx.globalAlpha = a;
+    ctx.font = 'bold 24px "DotGothic16", monospace';
+    ctx.textAlign = 'center';
+    ctx.lineWidth = 5;
+    ctx.strokeStyle = '#3a1a4a';
+    ctx.strokeText('S L O W', 0, 0);
+    ctx.fillStyle = '#e6caff';
+    ctx.fillText('S L O W', 0, 0);
+    ctx.restore();
+  } else if(ticket){
+    const remain = state.slowTicketLeft / 1000;
+    const fade = Math.min(1, state.slowTicketLeft / 800);
+    ctx.fillStyle = 'rgba(150, 100, 220, '+ (0.06*fade) +')';
+    ctx.fillRect(0,0,W,H);
+    // 残り秒（右上、Lv の下）
+    ctx.font = 'bold 14px "DotGothic16", monospace';
+    ctx.textAlign = 'right';
+    ctx.lineWidth = 3;
+    ctx.strokeStyle = '#3a1a4a';
+    const txt = `スロウ ${remain.toFixed(1)}s`;
+    ctx.strokeText(txt, W-10, 38);
+    ctx.fillStyle = '#c89aff';
+    ctx.fillText(txt, W-10, 38);
+  }
+  ctx.restore();
+}
+
+function drawBonus(){
+  if(!state.bonus.active) return;
+  const x = W/2, y = HUD_H + 46;
+  const ratio = Math.max(0, state.bonus.timeLeft / 10000);
+  ctx.save();
+  // 背景
+  ctx.fillStyle = 'rgba(0,0,0,.7)';
+  roundRect(x-90, y-14, 180, 32, 14, true, false);
+  ctx.strokeStyle = '#ffd24a';
+  ctx.lineWidth = 2;
+  roundRect(x-90, y-14, 180, 32, 14, false, true);
+  // テキスト
+  ctx.fillStyle = '#ffd24a';
+  ctx.font = 'bold 15px "DotGothic16", monospace';
+  ctx.textAlign = 'center';
+  ctx.fillText(`★ボーナス！ +5コイン／個 ★`, x, y);
+  // 残り時間バー
+  ctx.fillStyle = '#ff6644';
+  ctx.fillRect(x-80 + 160*(1-ratio)/2, y+7, 160*ratio, 4);
+  ctx.restore();
+}
+
+function drawCombo(){
+  if(state.combo < 2) return;
+  const mul = comboMul(state.combo);
+  const x = W/2, y = HUD_H + 18;
+  ctx.save();
+  // 背景
+  const tier = mul >= 5 ? '#ff66cc' : mul >= 3 ? '#ffd24a' : '#88ddff';
+  ctx.fillStyle = 'rgba(0,0,0,.7)';
+  roundRect(x-58, y-12, 116, 28, 14, true, false);
+  ctx.strokeStyle = tier;
+  ctx.lineWidth = 2;
+  roundRect(x-58, y-12, 116, 28, 14, false, true);
+  // テキスト
+  ctx.fillStyle = tier;
+  ctx.font = 'bold 16px "DotGothic16", monospace';
+  ctx.textAlign = 'center';
+  ctx.fillText(`COMBO ×${mul} (${state.combo})`, x, y+3);
+  // 残り時間バー
+  const ratio = 1 - state.comboTimer / COMBO_TIMEOUT;
+  ctx.fillStyle = tier;
+  ctx.globalAlpha = .8;
+  ctx.fillRect(x-50 + 100*(1-ratio)/2, y+10, 100*ratio, 3);
+  ctx.restore();
+}
+
+// ========= ループ =========
+let last = 0;
+function loop(t){
+  const realDt = Math.min(40, t - last); last = t;
+  // スロー：紫ボム > スロウ > 通常 の優先順
+  // 紫ボム=0.4倍（3秒）／スロウ=0.7倍（10秒）
+  if(state.slowLeft > 0) state.slowLeft -= realDt;
+  if(state.coinDoubleActive){
+    state.slowTicketLeft -= realDt;
+    if(state.slowTicketLeft <= 0){
+      state.coinDoubleActive = false;
+      state.slowTicketLeft = 0;
+    }
+  }
+  if(state.slowLeft > 0){
+    state.timeScale = 0.4;
+  } else if(state.coinDoubleActive){
+    state.timeScale = 0.7;
+  } else {
+    state.timeScale = 1;
+  }
+  const dt = realDt * state.timeScale;
+
+  if(state.running){
+    state.spawnTimer += dt;
+    if(state.spawnTimer >= state.spawnInterval){
+      state.spawnTimer = 0;
+      spawnBomb();
+    }
+    state.bombs.forEach(b=>{ if(b.state!=='drag') b.update(dt); });
+    // 車同士の重なり緩和（wander/drag のみ。enter/placed は除外）
+    for(let i=0;i<state.bombs.length;i++){
+      const a = state.bombs[i];
+      if(a._dead) continue;
+      if(a.state !== 'wander' && a.state !== 'drag') continue;
+      for(let j=i+1;j<state.bombs.length;j++){
+        const b = state.bombs[j];
+        if(b._dead) continue;
+        if(b.state !== 'wander' && b.state !== 'drag') continue;
+        const dx = b.x - a.x, dy = b.y - a.y;
+        const d2 = dx*dx + dy*dy;
+        const minD = a.r + b.r + 8;
+        if(d2 > 0.0001 && d2 < minD*minD){
+          const d = Math.sqrt(d2);
+          const overlap = (minD - d) * 0.5;
+          const nx = dx/d, ny = dy/d;
+          if(a.state === 'drag'){
+            b.x += nx*overlap*2; b.y += ny*overlap*2;
+          } else if(b.state === 'drag'){
+            a.x -= nx*overlap*2; a.y -= ny*overlap*2;
+          } else {
+            a.x -= nx*overlap; a.y -= ny*overlap;
+            b.x += nx*overlap; b.y += ny*overlap;
+          }
+          // フロア内にクランプ（drag は除く）
+          if(a.state !== 'drag'){
+            a.x = Math.max(FLOOR.x+a.r, Math.min(FLOOR.x+FLOOR.w-a.r, a.x));
+            a.y = Math.max(FLOOR.y+a.r, Math.min(FLOOR.y+FLOOR.h-a.r, a.y));
+          }
+          if(b.state !== 'drag'){
+            b.x = Math.max(FLOOR.x+b.r, Math.min(FLOOR.x+FLOOR.w-b.r, b.x));
+            b.y = Math.max(FLOOR.y+b.r, Math.min(FLOOR.y+FLOOR.h-b.r, b.y));
+          }
+        }
+      }
+    }
+    state.bombs.forEach(b=>{
+      if(b._exploded && !b._dead) explode(b);
+    });
+    state.bombs = state.bombs.filter(b=>!b._dead);
+    state.particles.forEach(p=>{
+      p.x += p.vx; p.y += p.vy;
+      p.vy += 0.2;
+      p.life -= dt;
+    });
+    state.particles = state.particles.filter(p=>p.life>0);
+    // 怒り顔アップの寿命更新
+    state.angryFaces.forEach(f => f.life -= dt);
+    state.angryFaces = state.angryFaces.filter(f => f.life > 0);
+    // ボーナスステージのカウントダウン
+    if(state.bonus.active){
+      state.bonus.timeLeft -= dt;
+      if(state.bonus.timeLeft <= 0){
+        endBonusStage();
+      }
+    }
+    // コンボのタイムアウト
+    if(state.combo > 0){
+      state.comboTimer += dt;
+      if(state.comboTimer >= COMBO_TIMEOUT){
+        state.combo = 0;
+        state.comboTimer = 0;
+      }
+    }
+    // 浮きスコアの更新
+    state.scoreFloaters.forEach(f=>{ f.y -= dt*0.04; f.life -= dt; });
+    state.scoreFloaters = state.scoreFloaters.filter(f=>f.life>0);
+  }
+
+  ctx.save();
+  if(state.shake>0){
+    const sx = (Math.random()-0.5)*state.shake;
+    const sy = (Math.random()-0.5)*state.shake;
+    ctx.translate(sx,sy);
+    state.shake *= 0.85;
+    if(state.shake<0.5) state.shake = 0;
+  }
+
+  drawBg();
+  drawZones();
+  drawChutes();
+  // 描画順：placed → wander → drag (drag最前面)
+  const order = ['placed','wander','enter','drag'];
+  state.bombs.slice().sort((a,b)=>order.indexOf(a.state)-order.indexOf(b.state)).forEach(b=>b.draw());
+  drawParticles();
+  drawAngryFaces();   // 顔アップは粒子より前面
+  drawScoreFloaters();
+  drawNightVignette();
+  drawHud();
+  drawCombo();
+  drawBonus();
+  drawItem();
+  drawSlowOverlay();
+
+  if(state.flash>0){
+    ctx.fillStyle = state.flashColor;
+    ctx.globalAlpha = state.flash;
+    ctx.fillRect(0,0,W,H);
+    ctx.globalAlpha = 1;
+    state.flash *= 0.85;
+    if(state.flash<0.02) state.flash = 0;
+  }
+
+  ctx.restore();
+
+  requestAnimationFrame(loop);
+}
+
+function startGame(){
+  if(window.TM) TM.start();
+  state.bombs = [];
+  state.particles = [];
+  state.angryFaces = [];
+  state.score = 0;
+  state.level = 1;
+  state.spawnInterval = 1900;
+  state.spawnTimer = 0;
+  state.running = true;
+  state.gameOver = false;
+  state._endGameScheduled = false;
+  // おじさんのパーク適用（クラクション+1で開始 等）
+  const activeUncle = uncleById(save.uncleId);
+  state.activeUncle = activeUncle;
+  state.itemPerkBonus = activeUncle.perks.startHorn || 0;
+  // 持ち込みアイテム（1プレイ1個）：ホームのラジオで選ぶ
+  state.activeItemKind = null;
+  state.itemCount = 0;
+  state.borrowedHorn = 0;
+  state.borrowedSlow = 0;
+  const carry = getCarrySelection();
+  if(carry === 'horn' && (save.owned.zenmetsu||0) > 0){
+    save.owned.zenmetsu--;
+    state.borrowedHorn = 1;
+    state.activeItemKind = 'horn';
+    state.itemCount = 1 + state.itemPerkBonus;
+  } else if(carry === 'slow' && (save.owned.coinDouble||0) > 0){
+    save.owned.coinDouble--;
+    state.borrowedSlow = 1;
+    state.activeItemKind = 'slow';
+    state.itemCount = 1;
+  } else if(state.itemPerkBonus > 0){
+    // 何も持って行かなくても、パーク分だけホーンが使える
+    state.activeItemKind = 'horn';
+    state.itemCount = state.itemPerkBonus;
+  }
+  state.combo = 0;
+  state.comboTimer = 0;
+  state.scoreFloaters = [];
+  state.runStats = {maxCombo:0, brownAvoided:0, itemsUsed:0, fineApplied:0};
+  state.bonus = {active:false, timeLeft:0, coinsThisStage:0};
+  state.slowLeft = 0;
+  state.timeScale = 1;
+  // スロウは持ち込み式タップアイテムに変更（startGame では発動しない）
+  state.coinDoubleActive = false;
+  state.slowTicketLeft = 0;
+  // シールド消費（最初の追突1回をふせぐ）
+  state.shieldActive = false;
+  state.shieldUsedThisRun = false;
+  if(useShieldChk.checked && (save.owned.shield||0) > 0){
+    save.owned.shield--;
+    state.shieldActive = true;
+  }
+  SAVE.save(save);
+  ensureDailyMissions();
+  hideHome();
+  gameoverEl.classList.add('hidden');
+  bgmPlay();
+}
+
+function endGame(){
+  state._endGameScheduled = false;
+  if(state.gameOver) return;
+  // シールド発動：1回だけゲームオーバーをふせぐ
+  if(state.shieldActive && !state.shieldUsedThisRun){
+    state.shieldActive = false;
+    state.shieldUsedThisRun = true;
+    state.flash = 1;
+    state.flashColor = '#ffd24a';
+    state.shake = 18;
+    // 場の爆発した車を片付けて続行
+    state.bombs.forEach(b => { if(b._exploded) b._dead = true; });
+    state.angryFaces = [];
+    state.combo = 0;
+    state.scoreFloaters.push({x: W/2, y: H/2 - 20, val: 'エアバッグ発動！', mul: 5, life: 1500, max: 1500, noPrefix: true});
+    sfx.daily();
+    return;
+  }
+  state.gameOver = true;
+  state.running = false;
+  bgmPause();
+  // 報酬：基本コインはスコア = コイン、罰金があれば差し引き
+  const baseEarned = state.score;
+  const fine = state.runStats.fineApplied || 0;
+  const earned = baseEarned - fine;
+  save.coins = Math.max(0, save.coins + earned);
+  // 持ち込みアイテムの未使用返却（1プレイ1個ルール）
+  if(state.borrowedHorn > 0 && state.itemCount > state.itemPerkBonus){
+    save.owned.zenmetsu = (save.owned.zenmetsu || 0) + 1;
+  }
+  if(state.borrowedSlow > 0 && state.itemCount > 0){
+    save.owned.coinDouble = (save.owned.coinDouble || 0) + 1;
+  }
+  // ベスト
+  let isNewBest = false;
+  if(state.score > save.best){
+    save.best = state.score;
+    isNewBest = true;
+  }
+  // 履歴
+  save.history.unshift({score: state.score, at: Date.now()});
+  if(save.history.length > 10) save.history.length = 10;
+  // デイリーミッション評価＆報酬
+  const newlyDone = evaluateMissionsAfterRun();
+  SAVE.save(save);
+  // ゲームオーバー画面
+  goScoreEl.textContent = state.score;
+  goCoinsEl.textContent = earned;
+  let bestHtml = isNewBest
+    ? `<svg class="ic"><use href="#ic-party"/></svg> <svg class="ic"><use href="#ic-trophy"/></svg> ハイスコアこうしん！`
+    : `<svg class="ic"><use href="#ic-trophy"/></svg> さいこう: ${save.best}`;
+  if(fine > 0){
+    bestHtml += `<div style="margin-top:8px;color:#ff5577;font-size:15px;">
+      パトカー違反で罰金 -${fine}円</div>`;
+  }
+  if(newlyDone.length > 0){
+    bestHtml += `<div style="margin-top:10px;color:#88dd88;font-size:15px;">`
+      + newlyDone.map(m=>`<svg class="ic"><use href="#ic-check"/></svg> ${m.desc} クリア！ ${rewardLabel(m.reward)}`).join('<br>')
+      + `</div>`;
+  }
+  goBestEl.innerHTML = bestHtml;
+  // シェアカードを作って表示
+  state._lastShare = {
+    score: state.score,
+    level: state.level,
+    best: save.best,
+    isNewBest,
+    maxCombo: state.runStats.maxCombo|0,
+  };
+  // シェア用にOGPキャンバスは生成しておくが、画面には表示せずバナー広告に置き換える
+  state._lastShareCanvas = makeShareCanvas(state._lastShare);
+  shareCardEl.style.display = 'none';
+  gameoverEl.classList.remove('hidden');
+  if(window.TM) TM.end(state.score, false);
+}
+
+// ============= シェア機能 =============
+const SHARE_URL = 'https://tom3games.com/play/traffic-ojisan/';
+function makeShareCanvas(data){
+  const SZ = 720;
+  const c = document.createElement('canvas');
+  c.width = SZ; c.height = SZ;
+  const x = c.getContext('2d');
+  // 背景：縦グラデ
+  const bg = x.createLinearGradient(0,0,0,SZ);
+  bg.addColorStop(0,'#1a1a26');
+  bg.addColorStop(1,'#3a2a48');
+  x.fillStyle = bg; x.fillRect(0,0,SZ,SZ);
+  // 装飾：散らばる星
+  for(let i=0;i<28;i++){
+    const sx = Math.random()*SZ, sy = Math.random()*SZ;
+    const r = 1 + Math.random()*2;
+    x.fillStyle = 'rgba(255,255,255,'+ (0.18 + Math.random()*0.4) +')';
+    x.beginPath(); x.arc(sx, sy, r, 0, Math.PI*2); x.fill();
+  }
+  // タイトル
+  x.fillStyle = '#ffd24a';
+  x.font = 'bold 44px "DotGothic16", monospace';
+  x.textAlign = 'center';
+  x.fillText('トラフィックおじさん', SZ/2, 84);
+  x.fillStyle = '#aaa';
+  x.font = '20px "DotGothic16", monospace';
+  x.fillText('Traffic Ojisan', SZ/2, 112);
+  // SCORE ラベル
+  x.fillStyle = '#fff';
+  x.font = '24px "DotGothic16", monospace';
+  x.fillText('SCORE', SZ/2, 180);
+  // 大スコア
+  x.fillStyle = data.isNewBest ? '#ff8aa3' : '#ffd24a';
+  x.font = 'bold 132px "DotGothic16", monospace';
+  x.fillText(String(data.score), SZ/2, 308);
+  // ニューレコード
+  if(data.isNewBest){
+    x.fillStyle = '#ff66cc';
+    x.font = 'bold 26px "DotGothic16", monospace';
+    x.fillText('★ ハイスコアこうしん ★', SZ/2, 350);
+  }
+  // 車2台（赤・青）
+  drawShareCar(x, SZ/2 - 130, 480, 'black');
+  drawShareCar(x, SZ/2 + 130, 480, 'red');
+  // ステータスタグ
+  x.fillStyle = 'rgba(255,255,255,.10)';
+  roundRectPath(x, 60, 580, SZ-120, 60, 14); x.fill();
+  x.fillStyle = '#fff';
+  x.font = 'bold 22px "DotGothic16", monospace';
+  x.textAlign = 'center';
+  x.fillText(`Lv.${data.level}    さいこう ${data.best}    最大コンボ ${data.maxCombo}`, SZ/2, 618);
+  return c;
+}
+function drawShareCar(x, cx, cy, type){
+  const SCALE = 8; // 24x14 のドット絵を 192x112 に拡大
+  const sw = CAR_SPRITE_W * SCALE;
+  const sh = CAR_SPRITE_H * SCALE;
+  // 影
+  x.fillStyle = 'rgba(0,0,0,.45)';
+  x.beginPath(); x.ellipse(cx, cy + sh/2 + 6, sw*0.45, 10, 0, 0, Math.PI*2); x.fill();
+  // 車スプライトをドット絵維持で拡大コピー
+  const sprite = CAR_SPRITES[type] || CAR_SPRITES.black;
+  const prevSmooth = x.imageSmoothingEnabled;
+  x.imageSmoothingEnabled = false;
+  x.drawImage(sprite, cx - sw/2, cy - sh/2, sw, sh);
+  x.imageSmoothingEnabled = prevSmooth;
+}
+function roundRectPath(x, rx, ry, w, h, rad){
+  x.beginPath();
+  x.moveTo(rx+rad, ry);
+  x.lineTo(rx+w-rad, ry); x.quadraticCurveTo(rx+w, ry, rx+w, ry+rad);
+  x.lineTo(rx+w, ry+h-rad); x.quadraticCurveTo(rx+w, ry+h, rx+w-rad, ry+h);
+  x.lineTo(rx+rad, ry+h); x.quadraticCurveTo(rx, ry+h, rx, ry+h-rad);
+  x.lineTo(rx, ry+rad); x.quadraticCurveTo(rx, ry, rx+rad, ry);
+  x.closePath();
+}
+async function shareScore(){
+  const data = state._lastShare;
+  if(!data) return;
+  const can = state._lastShareCanvas || makeShareCanvas(data);
+  const text = data.isNewBest
+    ? `トラフィックおじさんでハイスコアこうしん！スコア ${data.score}（Lv.${data.level} / 最大コンボ ${data.maxCombo}）`
+    : `トラフィックおじさんでスコア ${data.score}！ Lv.${data.level} まで生き残った（最大コンボ ${data.maxCombo}）`;
+  // Blob 取得
+  const blob = await new Promise(res => can.toBlob(res, 'image/png'));
+  const file = blob ? new File([blob], 'traffic-ojisan.png', {type:'image/png'}) : null;
+  try{
+    if(file && navigator.canShare && navigator.canShare({files:[file]})){
+      await navigator.share({files:[file], text, url: SHARE_URL, title: 'トラフィックおじさん'});
+      return;
+    }
+    if(navigator.share){
+      await navigator.share({text, url: SHARE_URL, title: 'トラフィックおじさん'});
+      return;
+    }
+  }catch(e){
+    if(e && e.name === 'AbortError') return;
+  }
+  // フォールバック: X 投稿（PC など）
+  const tw = `https://x.com/intent/post?text=${encodeURIComponent(text)}&url=${encodeURIComponent(SHARE_URL)}`;
+  window.open(tw, '_blank', 'noopener');
+}
+goShareBtn.addEventListener('click', shareScore);
+
+// デイリーログイン
+function checkDailyBonus(){
+  const today = new Date();
+  const todayStr = today.getFullYear() + '-' +
+                   String(today.getMonth()+1).padStart(2,'0') + '-' +
+                   String(today.getDate()).padStart(2,'0');
+  const lastLogin = localStorage.getItem('traffic_lastLogin');
+  if(lastLogin === todayStr) return null;
+
+  let streak = +localStorage.getItem('traffic_loginStreak') || 0;
+  if(lastLogin){
+    const last = new Date(lastLogin + 'T00:00:00');
+    const t = new Date(todayStr + 'T00:00:00');
+    const dayDiff = Math.round((t - last) / 86400000);
+    if(dayDiff === 1) streak++;
+    else streak = 1;
+  } else {
+    streak = 1;
+  }
+  // 報酬テーブル（7日サイクル）
+  const day = ((streak - 1) % 7) + 1;
+  const coinsTable = [50, 75, 100, 150, 200, 300, 500];
+  const reward = { coins: coinsTable[day-1], zenmetsu: (day===7 ? 1 : 0) };
+  save.coins += reward.coins;
+  if(reward.zenmetsu){
+    save.owned.zenmetsu = (save.owned.zenmetsu||0) + reward.zenmetsu;
+  }
+  SAVE.save(save);
+  localStorage.setItem('traffic_lastLogin', todayStr);
+  localStorage.setItem('traffic_loginStreak', String(streak));
+  return { streak, day, reward };
+}
+
+function showDailyModal(info){
+  const dEl = document.getElementById('daily');
+  document.getElementById('dailyStreak').textContent = info.streak;
+  document.getElementById('dailyCoins').textContent = info.reward.coins;
+  // 7日サイクルのドット表示
+  const dotsEl = document.getElementById('streakDots');
+  dotsEl.innerHTML = '';
+  for(let i=1; i<=7; i++){
+    const span = document.createElement('span');
+    span.className = 'dot';
+    if(i === 7) span.classList.add('gift');
+    if(i < info.day) span.classList.add('done');
+    if(i === info.day){
+      span.classList.add('today');
+      span.classList.remove('gift');
+    }
+    span.textContent = i;
+    dotsEl.appendChild(span);
+  }
+  const bonus = document.getElementById('dailyBonus');
+  if(info.reward.zenmetsu){
+    bonus.classList.remove('hidden');
+  } else {
+    bonus.classList.add('hidden');
+  }
+  dEl.classList.remove('hidden');
+  sfx.daily();
+  document.getElementById('dailyOk').onclick = ()=>{
+    sfx.tap();
+    dEl.classList.add('hidden');
+    refreshHome();
+  };
+}
+
+function buyZenmetsu(){
+  if(save.coins < ZEN_PRICE) return;
+  save.coins -= ZEN_PRICE;
+  save.owned.zenmetsu = (save.owned.zenmetsu||0) + 1;
+  SAVE.save(save);
+  sfx.buy();
+  refreshHome();
+}
+
+function buyTicket(){
+  if(save.coins < TICKET_PRICE) return;
+  save.coins -= TICKET_PRICE;
+  save.owned.coinDouble = (save.owned.coinDouble||0) + 1;
+  SAVE.save(save);
+  sfx.buy();
+  refreshHome();
+}
+
+function buyShield(){
+  if(save.best < SHIELD_UNLOCK_BEST) return;
+  if(save.coins < SHIELD_PRICE) return;
+  save.coins -= SHIELD_PRICE;
+  save.owned.shield = (save.owned.shield||0) + 1;
+  SAVE.save(save);
+  sfx.buy();
+  refreshHome();
+}
+
+startBtn.addEventListener('click', () => { sfx.tap(); startGame(); });
+
+// ハンバーガーメニュー＆あそびかた・クレジット・音声トグル
+(()=>{
+  const menuBtn = document.getElementById('menuBtn');
+  const menuPop = document.getElementById('menuPop');
+  const howtoEl = document.getElementById('howto');
+  const howtoCloseBtn = document.getElementById('howtoClose');
+  const creditEl = document.getElementById('credit');
+  const creditCloseBtn = document.getElementById('creditClose');
+  const bgmToggleVal = document.getElementById('bgmToggleVal');
+  const sfxToggleVal = document.getElementById('sfxToggleVal');
+  function refreshAudioToggles(){
+    bgmToggleVal.textContent = audioPrefs.bgm ? 'ON' : 'OFF';
+    bgmToggleVal.classList.toggle('on', audioPrefs.bgm);
+    bgmToggleVal.classList.toggle('off', !audioPrefs.bgm);
+    sfxToggleVal.textContent = audioPrefs.sfx ? 'ON' : 'OFF';
+    sfxToggleVal.classList.toggle('on', audioPrefs.sfx);
+    sfxToggleVal.classList.toggle('off', !audioPrefs.sfx);
+  }
+  refreshAudioToggles();
+  menuBtn.addEventListener('click', (e)=>{
+    e.stopPropagation();
+    menuPop.classList.toggle('hidden');
+  });
+  document.addEventListener('click', (e)=>{
+    if(!menuPop.classList.contains('hidden') && !menuPop.contains(e.target) && e.target !== menuBtn){
+      menuPop.classList.add('hidden');
+    }
+  });
+  menuPop.querySelector('[data-action="howto"]').addEventListener('click', ()=>{
+    menuPop.classList.add('hidden');
+    howtoEl.classList.remove('hidden');
+  });
+  menuPop.querySelector('[data-action="credit"]').addEventListener('click', ()=>{
+    menuPop.classList.add('hidden');
+    creditEl.classList.remove('hidden');
+  });
+  menuPop.querySelector('[data-action="bgm"]').addEventListener('click', (e)=>{
+    e.stopPropagation();
+    audioPrefs.bgm = !audioPrefs.bgm;
+    saveAudioPrefs();
+    refreshAudioToggles();
+    if(audioPrefs.bgm) bgmPlay(); else bgmPause();
+  });
+  menuPop.querySelector('[data-action="sfx"]').addEventListener('click', (e)=>{
+    e.stopPropagation();
+    audioPrefs.sfx = !audioPrefs.sfx;
+    saveAudioPrefs();
+    refreshAudioToggles();
+    if(audioPrefs.sfx) sfx.tap();
+  });
+  howtoCloseBtn.addEventListener('click', ()=>{
+    howtoEl.classList.add('hidden');
+  });
+  howtoEl.addEventListener('click', (e)=>{
+    if(e.target === howtoEl) howtoEl.classList.add('hidden');
+  });
+  creditCloseBtn.addEventListener('click', ()=>{
+    creditEl.classList.add('hidden');
+  });
+  creditEl.addEventListener('click', (e)=>{
+    if(e.target === creditEl) creditEl.classList.add('hidden');
+  });
+})();
+
+// ホーム画面のタブ切替（ホーム / ショップ）
+(()=>{
+  const tabs = document.querySelectorAll('#home .tab');
+  const contents = document.querySelectorAll('#home .tabContent');
+  tabs.forEach(btn => {
+    btn.addEventListener('click', ()=>{
+      sfx.tap();
+      const target = btn.dataset.tab;
+      tabs.forEach(b => b.classList.toggle('active', b.dataset.tab === target));
+      contents.forEach(c => c.classList.toggle('hidden', c.dataset.tab !== target));
+    });
+  });
+})();
+goHomeBtn.addEventListener('click', async () => {
+  sfx.tap();
+  showHome();
+});
+buyZenBtnEl.addEventListener('click', buyZenmetsu);
+buyTcBtnEl.addEventListener('click', buyTicket);
+buyShieldBtnEl.addEventListener('click', buyShield);
+
+function fit(){
+  const stage = document.getElementById('stage');
+  const sw = stage.clientWidth, sh = stage.clientHeight;
+  const ratio = W/H;
+  let w = sw, h = sw/ratio;
+  if(h > sh){ h = sh; w = sh*ratio; }
+  cv.style.width = w+'px';
+  cv.style.height = h+'px';
+}
+window.addEventListener('resize', fit);
+fit();
+
+// 初期表示はホーム
+showHome();
+// デイリーログインチェック
+const dailyInfo = checkDailyBonus();
+if(dailyInfo) showDailyModal(dailyInfo);
+
+requestAnimationFrame(loop);
+window.__jsUp = true;
+window.__toReady = true;
+
+})();
+</script>
+<script src="tm.js?v=1" data-game="traffic-ojisan"></script>
+<script src="support.js?v=1" data-again="goHome" data-ja="缶コーヒー" data-en="a can of coffee"></script>
+</body>
+</html>
