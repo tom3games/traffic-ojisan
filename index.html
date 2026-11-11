@@ -231,6 +231,10 @@
   #gameover .actions button{margin-top:18px;}
   #gameover .shareBtn{background:#2a7ed8;color:#fff;border-color:#1a4a7a !important;box-shadow:0 4px 0 #1a4a7a !important;}
   #gameover .shareBtn:active{box-shadow:0 2px 0 #1a4a7a !important;}
+  /* iPhone アプリ版へのボタン（app.js）。黄色の主ボタンより控えめな黒地・黄色の縁 */
+  #tmApp{display:inline-flex;align-items:center;justify-content:center;gap:7px;width:fit-content;max-width:100%;min-height:40px;margin:24px auto 0;padding:0 14px;
+         font-size:14px;font-weight:bold;color:#ffd24a;text-decoration:none;background:#1c1a14;border:2px solid #ffcc33;border-radius:0;box-shadow:0 3px 0 #a06c10;}
+  #tmApp:active{transform:translateY(2px);box-shadow:0 1px 0 #a06c10;}
   #gameover .shareCard{margin-top:14px;max-width:280px;width:80%;border:3px solid #ffd24a;border-radius:0;
                        box-shadow:6px 6px 0 rgba(0,0,0,.5);display:none;}
 </style>
@@ -3329,7 +3333,8 @@ window.__toReady = true;
 
 })();
 </script>
-<script src="tm.js?v=1" data-game="traffic-ojisan"></script>
+<script src="tm.js?v=2" data-game="traffic-ojisan"></script>
 <script src="support.js?v=1" data-again="goHome" data-ja="缶コーヒー" data-en="a can of coffee"></script>
+<script src="app.js?v=1" data-url="https://apps.apple.com/jp/app/id6787802085" data-again="goHome"></script>
 </body>
 </html>
