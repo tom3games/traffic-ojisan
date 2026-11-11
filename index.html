@@ -237,6 +237,12 @@
   #tmApp:active{transform:translateY(2px);box-shadow:0 1px 0 #a06c10;}
   #gameover .shareCard{margin-top:14px;max-width:280px;width:80%;border:3px solid #ffd24a;border-radius:0;
                        box-shadow:6px 6px 0 rgba(0,0,0,.5);display:none;}
+  /* X のアプリの中: 下の帯（--inapp-bot）の分だけ盤面と札を上げる */
+  html.inapp-x #stage{bottom:var(--inapp-bot,0px);}
+  html.inapp-x #home{padding-bottom:calc(18px + var(--inapp-bot,0px));}
+  html.inapp-x #howto, html.inapp-x #credit{padding-bottom:calc(18px + var(--inapp-bot,0px));}
+  html.inapp-x #daily{padding-bottom:var(--inapp-bot,0px);}
+  html.inapp-x #gameover{padding-bottom:calc(24px + var(--inapp-bot,0px));}
 </style>
 <script>
 (function(){
@@ -3320,6 +3326,7 @@ function fit(){
 }
 window.addEventListener('resize', fit);
 fit();
+window.addEventListener('load', fit);   // X の印は support.js（後から読む）が付ける
 
 // 初期表示はホーム
 showHome();
@@ -3334,7 +3341,7 @@ window.__toReady = true;
 })();
 </script>
 <script src="tm.js?v=2" data-game="traffic-ojisan"></script>
-<script src="support.js?v=1" data-again="goHome" data-ja="缶コーヒー" data-en="a can of coffee"></script>
+<script src="support.js?v=2" data-again="goHome" data-ja="缶コーヒー" data-en="a can of coffee"></script>
 <script src="app.js?v=1" data-url="https://apps.apple.com/jp/app/id6787802085" data-again="goHome"></script>
 </body>
 </html>
